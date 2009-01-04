@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ffck.members;
+package ffck.members.activities;
 
 import static android.provider.BaseColumns._ID;
 import static ffck.members.Members.CONTENT_URI;
@@ -25,6 +25,12 @@ import static ffck.members.Members.Columns.LAST_NAME;
 import static org.openintents.intents.FileManagerIntents.ACTION_PICK_FILE;
 import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
 import static org.openintents.intents.FileManagerIntents.EXTRA_TITLE;
+import ffck.members.MembersCsvImporter;
+import ffck.members.R;
+import ffck.members.R.id;
+import ffck.members.R.layout;
+import ffck.members.R.menu;
+import ffck.members.R.string;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -314,7 +320,7 @@ public class MembersListActivity extends ListActivity {
      */
     private void deleteAllMembers() {
         getContentResolver().delete(CONTENT_URI, null, null);
-        Toast.makeText(this, R.string.toaster_delete_all_members, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.toast_delete_all_members, Toast.LENGTH_SHORT).show();
     }
 
     /*

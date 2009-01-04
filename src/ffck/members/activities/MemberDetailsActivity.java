@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ffck.members;
+package ffck.members.activities;
 
 import static ffck.members.Members.CONTENT_URI;
 import static ffck.members.Members.Columns.ADDRESS;
@@ -32,14 +32,18 @@ import static ffck.members.Members.Columns.PHONE_MOBILE;
 import static ffck.members.Members.Columns.PHONE_MOBILE_2;
 import static ffck.members.Members.Columns.PHONE_OTHER;
 import static ffck.members.Members.Columns.POSTAL_CODE;
+import ffck.members.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Contacts;
+import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,7 +56,8 @@ import java.util.List;
 
 /**
  * FFCK Member details activity. Display the details of a member, and allow to
- * delete it. When the member is deleted, this activity will be finished.
+ * delete it. When the member is deleted, this activity will be finished. Also
+ * allow to add the member to your contacts.
  */
 public class MemberDetailsActivity extends Activity {
 
@@ -157,7 +162,61 @@ public class MemberDetailsActivity extends Activity {
      * success message after adding.
      */
     private void addToContacts() {
-        // TODO
+        final String firstName = cursor.getString(cursor.getColumnIndexOrThrow(FIRST_NAME));
+        final String lastName = cursor.getString(cursor.getColumnIndexOrThrow(LAST_NAME));
+        final String phoneMobile = cursor.getString(cursor.getColumnIndexOrThrow(PHONE_MOBILE));
+        final String phoneHome = cursor.getString(cursor.getColumnIndexOrThrow(PHONE_HOME));
+        final String email = cursor.getString(cursor.getColumnIndexOrThrow(EMAIL));
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setIcon(android.R.drawable.ic_dialog_alert);
+        dialog.setTitle(R.string.dialog_add_to_contacts_title);
+        dialog.setMessage(getString(R.string.dialog_add_to_contacts_text, firstName, lastName));
+        dialog.setPositiveButton(R.string.dialog_add_to_contacts_button_ok, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ContentValues values = new ContentValues();
+
+                // create a new contact with the name
+                values.put(Contacts.People.NAME, firstName + " " + lastName);
+                Uri uri = MemberDetailsActivity.this.getContentResolver().insert(
+                        Contacts.People.CONTENT_URI, values);
+
+                // add the phone numbers
+                Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
+                if (!TextUtils.isEmpty(phoneMobile)) {
+                    values.clear();
+                    values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
+                    values.put(Contacts.Phones.NUMBER, phoneMobile);
+                    MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+                }
+                if (!TextUtils.isEmpty(phoneHome)) {
+                    values.clear();
+                    values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
+                    values.put(Contacts.Phones.NUMBER, phoneHome);
+                    MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+                }
+
+                // add the email
+                if (!TextUtils.isEmpty(email)) {
+                    Uri emailUri = Uri.withAppendedPath(uri,
+                            Contacts.People.ContactMethods.CONTENT_DIRECTORY);
+                    values.clear();
+                    values.put(Contacts.People.ContactMethods.KIND, Contacts.KIND_EMAIL);
+                    values.put(Contacts.People.ContactMethods.DATA, email);
+                    values.put(Contacts.People.ContactMethods.TYPE,
+                            Contacts.People.ContactMethods.TYPE_HOME);
+                    MemberDetailsActivity.this.getContentResolver().insert(emailUri, values);
+                }
+
+                // display success message (toaster)
+                Toast.makeText(MemberDetailsActivity.this,
+                        getString(R.string.toast_add_member_to_contacts, firstName, lastName),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+        dialog.setNegativeButton(R.string.dialog_add_to_contacts_button_nok, null);
+        dialog.create().show();
     }
 
     /**
@@ -183,7 +242,7 @@ public class MemberDetailsActivity extends Activity {
 
                 // display success message (toaster)
                 Toast.makeText(MemberDetailsActivity.this,
-                        getString(R.string.toaster_delete_member, firstName, lastName),
+                        getString(R.string.toast_delete_member, firstName, lastName),
                         Toast.LENGTH_SHORT).show();
 
                 // finish the activity

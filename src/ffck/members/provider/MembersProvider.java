@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ffck.members;
+package ffck.members.provider;
 
 import static android.provider.BaseColumns._ID;
 import static ffck.members.Members.AUTHORITY;
@@ -38,6 +38,7 @@ import static ffck.members.Members.Columns.PHONE_MOBILE;
 import static ffck.members.Members.Columns.PHONE_MOBILE_2;
 import static ffck.members.Members.Columns.PHONE_OTHER;
 import static ffck.members.Members.Columns.POSTAL_CODE;
+import ffck.members.Members;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -94,7 +95,7 @@ public class MembersProvider extends ContentProvider {
                 break;
             case MATCH_MEMBER:
                 queryBuilder.appendWhere(CODE + "=?");
-                selectionArgs = Util.safePrepend(uri.getLastPathSegment(), selectionArgs);
+                selectionArgs = safePrepend(uri.getLastPathSegment(), selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -186,6 +187,34 @@ public class MembersProvider extends ContentProvider {
         // Notify any watchers of the change
         getContext().getContentResolver().notifyChange(uri, null);
         return count;
+    }
+
+    /*
+     * Helper methods
+     */
+
+    /**
+     * Prepend the given newValue to the given array.
+     * 
+     * @param newValue String value to be prepended (at first position) to the
+     *            array
+     * @param array array to be modified (could be null)
+     * @return new instance of an array of Strings, with the newValue at first
+     *         position
+     */
+    private String[] safePrepend(String newValue, String[] array) {
+        if (array == null) {
+            return new String[] {
+                newValue
+            };
+        }
+
+        String[] newArray = new String[array.length + 1];
+        newArray[0] = newValue;
+        for (int i = 0; i < array.length; i++) {
+            newArray[i + 1] = array[i];
+        }
+        return newArray;
     }
 
     /*

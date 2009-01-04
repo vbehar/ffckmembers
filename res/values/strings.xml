@@ -77,6 +77,16 @@
     <string
         name="dialog_delete_member_button_nok">No</string>
 
+    <!-- Dialog 'Add member to contacts' -->
+    <string
+        name="dialog_add_to_contacts_title">Confirm</string>
+    <string
+        name="dialog_add_to_contacts_text">Are you sure you want to add %s %s to your contacts ?</string>
+    <string
+        name="dialog_add_to_contacts_button_ok">Yes !</string>
+    <string
+        name="dialog_add_to_contacts_button_nok">No</string>
+
     <!-- Dialog 'Delete all members' -->
     <string
         name="dialog_delete_all_members_title">Confirm</string>
@@ -105,16 +115,20 @@
         name="import_csv_pick_file_title">Select CSV file to import...</string>
     <string
         name="import_csv_pick_file_button">Import !</string>
-        
+
     <!-- Import from CSV - Progress bar -->
     <string
         name="import_csv_progress_bar_title">Please wait...</string>
     <string
         name="import_csv_progress_bar_text">Importing members from CSV file...</string>
-        
-    <!-- Toasters 'Delete member(s)' (successful) -->
+
+    <!-- Toast 'Add member to contacts' (successful) -->
     <string
-        name="toaster_delete_member">%s %s successfully deleted !</string>
+        name="toast_add_member_to_contacts">%s %s successfully added to your contacts !</string>
+
+    <!-- Toasts 'Delete member(s)' (successful) -->
     <string
-        name="toaster_delete_all_members">All members successfully deleted !</string>
+        name="toast_delete_member">%s %s successfully deleted !</string>
+    <string
+        name="toast_delete_all_members">All members successfully deleted !</string>
 </resources>
