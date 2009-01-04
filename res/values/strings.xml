@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+ * Copyright (C) 2009 Vincent Behar
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<resources>
+    <!-- Application-wide strings -->
+    <string
+        name="app_name">FFCK Members</string>
+
+    <!-- MembersListActivity -->
+    <string
+        name="members_list_empty">No members to display...</string>
+
+    <!-- MembersListActivity's menu -->
+    <string
+        name="members_list_menu_delete_all_label">Delete all</string>
+    <string
+        name="members_list_menu_delete_all_shortcut">d</string>
+    <string
+        name="members_list_menu_import_label">Import</string>
+    <string
+        name="members_list_menu_import_shortcut">i</string>
+    <string
+        name="members_list_menu_help_label">Help</string>
+    <string
+        name="members_list_menu_help_shortcut">h</string>
+    <string
+        name="members_list_menu_about_label">About</string>
+    <string
+        name="members_list_menu_about_shortcut">a</string>
+
+    <!-- MemberDetailsActivity's menu -->
+    <string
+        name="member_details_menu_add_contact_label">Add to contacts</string>
+    <string
+        name="member_details_menu_add_contact_shortcut">a</string>
+    <string
+        name="member_details_menu_delete_label">Delete</string>
+    <string
+        name="member_details_menu_delete_shortcut">d</string>
+
+    <!-- Dialog 'About' -->
+    <string
+        name="dialog_about_title">About</string>
+    <string
+        name="dialog_about_text">About Text...</string>
+    <string
+        name="dialog_about_button">Close</string>
+
+    <!-- Dialog 'Help' -->
+    <string
+        name="dialog_help_title">Help</string>
+    <string
+        name="dialog_help_text">Help Text...</string>
+    <string
+        name="dialog_help_button">Close</string>
+
+    <!-- Dialog 'Delete member' -->
+    <string
+        name="dialog_delete_member_title">Confirm</string>
+    <string
+        name="dialog_delete_member_text">Are you sure you want to delete %s %s ?</string>
+    <string
+        name="dialog_delete_member_button_ok">Yes !</string>
+    <string
+        name="dialog_delete_member_button_nok">No</string>
+
+    <!-- Dialog 'Delete all members' -->
+    <string
+        name="dialog_delete_all_members_title">Confirm</string>
+    <string
+        name="dialog_delete_all_members_text">Are you sure you want to delete all members ?</string>
+    <string
+        name="dialog_delete_all_members_button_ok">Yes !</string>
+    <string
+        name="dialog_delete_all_members_button_nok">No</string>
+
+    <!-- Dialog 'PICK_FILE activity not found' -->
+    <string
+        name="dialog_pick_file_not_found_title">Error !</string>
+    <string
+        name="dialog_pick_file_not_found_text">Unable to find a compatible application for
+        selecting
+        a file.\n
+        Please install an OpenIntents compatible File Manager
+        application, such as 'OI File Manager', and try again.
+        </string>
+    <string
+        name="dialog_pick_file_not_found_button">Close</string>
+
+    <!-- Import from CSV - File selector -->
+    <string
+        name="import_csv_pick_file_title">Select CSV file to import...</string>
+    <string
+        name="import_csv_pick_file_button">Import !</string>
+        
+    <!-- Import from CSV - Progress bar -->
+    <string
+        name="import_csv_progress_bar_title">Please wait...</string>
+    <string
+        name="import_csv_progress_bar_text">Importing members from CSV file...</string>
+        
+    <!-- Toasters 'Delete member(s)' (successful) -->
+    <string
+        name="toaster_delete_member">%s %s successfully deleted !</string>
+    <string
+        name="toaster_delete_all_members">All members successfully deleted !</string>
+</resources>
