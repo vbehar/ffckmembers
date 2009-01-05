@@ -27,10 +27,6 @@ import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
 import static org.openintents.intents.FileManagerIntents.EXTRA_TITLE;
 import ffck.members.MembersCsvImporter;
 import ffck.members.R;
-import ffck.members.R.id;
-import ffck.members.R.layout;
-import ffck.members.R.menu;
-import ffck.members.R.string;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
