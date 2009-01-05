@@ -36,6 +36,7 @@ import ffck.members.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -61,6 +62,20 @@ import java.util.List;
  */
 public class MemberDetailsActivity extends Activity {
 
+    /*
+     * Dialogs identifiers
+     */
+
+    /** Identifier for the 'Add to contacts' dialog */
+    private static final int DIALOG_ADD_TO_CONTACTS = 1;
+
+    /** Identifier for the 'Delete' dialog */
+    private static final int DIALOG_DELETE = 2;
+
+    /*
+     * DB->View mapping
+     */
+
     /** Fields that will be 'linkified' */
     private static final List<String> LINKIFIED_FIELDS = Arrays.asList(new String[] {
             PHONE_HOME, PHONE_MOBILE, PHONE_MOBILE_2, PHONE_OTHER, EMAIL, EMAIL_2
@@ -82,6 +97,10 @@ public class MemberDetailsActivity extends Activity {
             R.id.member_details_postal_code, R.id.member_details_city, R.id.member_details_code,
             R.id.member_details_last_license
     };
+
+    /*
+     * Instance-specific variables
+     */
 
     /** The cursor holding the member's data */
     private Cursor cursor;
@@ -142,13 +161,55 @@ public class MemberDetailsActivity extends Activity {
         // when a menu item is selected :
         switch (item.getItemId()) {
             case R.id.member_details_menu_add_contact:
-                addToContacts();
+                showDialog(DIALOG_ADD_TO_CONTACTS);
                 return true;
             case R.id.member_details_menu_delete:
-                deleteMember();
+                showDialog(DIALOG_DELETE);
                 return true;
             default:
                 return false;
+        }
+    }
+
+    /*
+     * Dialogs management
+     */
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_ADD_TO_CONTACTS:
+                AlertDialog.Builder addToContacts = new AlertDialog.Builder(this);
+                addToContacts.setIcon(android.R.drawable.ic_dialog_alert);
+                addToContacts.setTitle(R.string.dialog_add_to_contacts_title);
+                addToContacts.setMessage(getString(R.string.dialog_add_to_contacts_text,
+                        get(FIRST_NAME), get(LAST_NAME)));
+                addToContacts.setPositiveButton(R.string.dialog_add_to_contacts_button_ok,
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addToContacts();
+                            }
+                        });
+                addToContacts.setNegativeButton(R.string.dialog_add_to_contacts_button_nok, null);
+                return addToContacts.create();
+            case DIALOG_DELETE:
+                AlertDialog.Builder delete = new AlertDialog.Builder(this);
+                delete.setIcon(android.R.drawable.ic_dialog_alert);
+                delete.setTitle(R.string.dialog_delete_member_title);
+                delete.setMessage(getString(R.string.dialog_delete_member_text, get(FIRST_NAME),
+                        get(LAST_NAME)));
+                delete.setPositiveButton(R.string.dialog_delete_member_button_ok,
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteMember();
+                            }
+                        });
+                delete.setNegativeButton(R.string.dialog_delete_member_button_nok, null);
+                return delete.create();
+            default:
+                return null;
         }
     }
 
@@ -158,100 +219,86 @@ public class MemberDetailsActivity extends Activity {
 
     /**
      * Add the member (represented by the cursor of this activity) to the
-     * contacts. Will display a dialog for confirmation of the action, and a
-     * success message after adding.
+     * contacts. Will display a success message after adding.
      */
     private void addToContacts() {
-        final String firstName = cursor.getString(cursor.getColumnIndexOrThrow(FIRST_NAME));
-        final String lastName = cursor.getString(cursor.getColumnIndexOrThrow(LAST_NAME));
-        final String phoneMobile = cursor.getString(cursor.getColumnIndexOrThrow(PHONE_MOBILE));
-        final String phoneHome = cursor.getString(cursor.getColumnIndexOrThrow(PHONE_HOME));
-        final String email = cursor.getString(cursor.getColumnIndexOrThrow(EMAIL));
+        String firstName = get(FIRST_NAME);
+        String lastName = get(LAST_NAME);
+        String phoneMobile = get(PHONE_MOBILE);
+        String phoneHome = get(PHONE_HOME);
+        String email = get(EMAIL);
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setIcon(android.R.drawable.ic_dialog_alert);
-        dialog.setTitle(R.string.dialog_add_to_contacts_title);
-        dialog.setMessage(getString(R.string.dialog_add_to_contacts_text, firstName, lastName));
-        dialog.setPositiveButton(R.string.dialog_add_to_contacts_button_ok, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ContentValues values = new ContentValues();
+        ContentValues values = new ContentValues();
 
-                // create a new contact with the name
-                values.put(Contacts.People.NAME, firstName + " " + lastName);
-                Uri uri = MemberDetailsActivity.this.getContentResolver().insert(
-                        Contacts.People.CONTENT_URI, values);
+        // create a new contact with the name
+        values.put(Contacts.People.NAME, firstName + " " + lastName);
+        Uri uri = MemberDetailsActivity.this.getContentResolver().insert(
+                Contacts.People.CONTENT_URI, values);
 
-                // add the phone numbers
-                Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
-                if (!TextUtils.isEmpty(phoneMobile)) {
-                    values.clear();
-                    values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
-                    values.put(Contacts.Phones.NUMBER, phoneMobile);
-                    MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
-                }
-                if (!TextUtils.isEmpty(phoneHome)) {
-                    values.clear();
-                    values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
-                    values.put(Contacts.Phones.NUMBER, phoneHome);
-                    MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
-                }
+        // add the phone numbers
+        Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
+        if (!TextUtils.isEmpty(phoneMobile)) {
+            values.clear();
+            values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
+            values.put(Contacts.Phones.NUMBER, phoneMobile);
+            MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+        }
+        if (!TextUtils.isEmpty(phoneHome)) {
+            values.clear();
+            values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
+            values.put(Contacts.Phones.NUMBER, phoneHome);
+            MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+        }
 
-                // add the email
-                if (!TextUtils.isEmpty(email)) {
-                    Uri emailUri = Uri.withAppendedPath(uri,
-                            Contacts.People.ContactMethods.CONTENT_DIRECTORY);
-                    values.clear();
-                    values.put(Contacts.People.ContactMethods.KIND, Contacts.KIND_EMAIL);
-                    values.put(Contacts.People.ContactMethods.DATA, email);
-                    values.put(Contacts.People.ContactMethods.TYPE,
-                            Contacts.People.ContactMethods.TYPE_HOME);
-                    MemberDetailsActivity.this.getContentResolver().insert(emailUri, values);
-                }
+        // add the email
+        if (!TextUtils.isEmpty(email)) {
+            Uri emailUri = Uri.withAppendedPath(uri,
+                    Contacts.People.ContactMethods.CONTENT_DIRECTORY);
+            values.clear();
+            values.put(Contacts.People.ContactMethods.KIND, Contacts.KIND_EMAIL);
+            values.put(Contacts.People.ContactMethods.DATA, email);
+            values.put(Contacts.People.ContactMethods.TYPE,
+                    Contacts.People.ContactMethods.TYPE_HOME);
+            MemberDetailsActivity.this.getContentResolver().insert(emailUri, values);
+        }
 
-                // display success message (toaster)
-                Toast.makeText(MemberDetailsActivity.this,
-                        getString(R.string.toast_add_member_to_contacts, firstName, lastName),
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-        dialog.setNegativeButton(R.string.dialog_add_to_contacts_button_nok, null);
-        dialog.create().show();
+        // display success message (toaster)
+        Toast.makeText(MemberDetailsActivity.this,
+                getString(R.string.toast_add_member_to_contacts, firstName, lastName),
+                Toast.LENGTH_LONG).show();
     }
 
     /**
      * Delete the member represented by the cursor of this activity, and finish
-     * the activity. Will display a dialog for confirmation of the action, and a
-     * success message after deletion.
+     * the activity. Will display a success message after deletion.
      */
     private void deleteMember() {
-        final String firstName = cursor.getString(cursor.getColumnIndexOrThrow(FIRST_NAME));
-        final String lastName = cursor.getString(cursor.getColumnIndexOrThrow(LAST_NAME));
+        // delete the member
+        Uri uri = Uri.withAppendedPath(CONTENT_URI, get(CODE));
+        getContentResolver().delete(uri, null, null);
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setIcon(android.R.drawable.ic_dialog_alert);
-        dialog.setTitle(R.string.dialog_delete_member_title);
-        dialog.setMessage(getString(R.string.dialog_delete_member_text, firstName, lastName));
-        dialog.setPositiveButton(R.string.dialog_delete_member_button_ok, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // delete the member
-                String code = cursor.getString(cursor.getColumnIndexOrThrow(CODE));
-                Uri uri = Uri.withAppendedPath(CONTENT_URI, code);
-                getContentResolver().delete(uri, null, null);
+        // display success message (toaster)
+        Toast.makeText(MemberDetailsActivity.this,
+                getString(R.string.toast_delete_member, get(FIRST_NAME), get(LAST_NAME)),
+                Toast.LENGTH_SHORT).show();
 
-                // display success message (toaster)
-                Toast.makeText(MemberDetailsActivity.this,
-                        getString(R.string.toast_delete_member, firstName, lastName),
-                        Toast.LENGTH_SHORT).show();
+        // finish the activity
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
 
-                // finish the activity
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
-        });
-        dialog.setNegativeButton(R.string.dialog_delete_member_button_nok, null);
-        dialog.create().show();
+    /*
+     * Helper methods
+     */
+
+    /**
+     * Retrieve the value in the given columnName, for the current member
+     * 
+     * @param columnName for which the value should be retrieved (see Members.Columns)
+     * @return String : value retrieved
+     */
+    private String get(String columnName) {
+        return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
     }
 
 }
