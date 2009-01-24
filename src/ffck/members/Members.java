@@ -62,7 +62,7 @@ public interface Members {
         /** birth date, as a String, format dd/MM/yyyy */
         String BIRTH_DATE = "birth_date";
 
-        /** gender, as a String, either H (male) or F (female) */
+        /** gender, as a String, either M (male) or F (female) */
         String GENDER = "gender";
 
         /** address (String) */

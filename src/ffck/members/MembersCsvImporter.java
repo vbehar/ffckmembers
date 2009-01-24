@@ -42,7 +42,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -149,15 +152,44 @@ public class MembersCsvImporter {
             String column = MAPPING.get(header[i]);
             if (column != null) {
                 String value = values[i];
-                if (member.containsKey(column)) {
-                    // preserve previous value. Hack because the CSV contains
-                    // the same header twice...
-                    if (TextUtils.isEmpty(value)) {
-                        value = member.getAsString(column);
-                    } else {
-                        value = member.getAsString(column) + "\n" + value;
+
+                // clean names...
+                if (column.equals(FIRST_NAME) || column.equals(LAST_NAME)) {
+                    value = capitalize(value);
+                }
+                // ... and cities & countries
+                if (column.equals(CITY) || column.equals(COUNTRY)) {
+                    value = capitalize(value);
+                }
+
+                // clean phone numbers
+                if (column.equals(PHONE_HOME) || column.equals(PHONE_MOBILE)
+                        || column.equals(PHONE_MOBILE_2) || column.equals(PHONE_OTHER)) {
+                    if (!TextUtils.isEmpty(value)) {
+                        value = value.replaceAll("\\.", "");
+                        value = value.replaceFirst("0", "+33");
                     }
                 }
+
+                // fix gender code
+                if (column.equals(GENDER)) {
+                    if ("H".equals(value)) { // H = 'Homme'
+                        value = "M"; // M = 'Male'
+                    }
+                }
+
+                // address has the same header twice in the CSV...
+                if (column.equals(ADDRESS)) {
+                    value = value.toLowerCase(Locale.FRANCE);
+                    if (member.containsKey(column)) {
+                        if (TextUtils.isEmpty(value)) {
+                            value = member.getAsString(column);
+                        } else {
+                            value = member.getAsString(column) + "\n" + value;
+                        }
+                    }
+                }
+
                 member.put(column, value);
             }
         }
@@ -195,4 +227,34 @@ public class MembersCsvImporter {
         return TextUtils.split(nextLine, CSV_SEPARATOR);
     }
 
+    /**
+     * Capitalize the given input string
+     * 
+     * @param input string that needs to be capitalized
+     * @return capitalized string, won't be null
+     */
+    private String capitalize(String input) {
+        if (TextUtils.isEmpty(input)) {
+            return "";
+        }
+
+        List<Character> separators = Arrays.asList(new Character[] {
+                ' ', '-', '_', ',', '.'
+        });
+        String lowerCased = input.toLowerCase(Locale.FRANCE);
+        StringBuilder output = new StringBuilder();
+        boolean needToUpperNext = true;
+        for (int i = 0; i < input.length(); i++) {
+            if (needToUpperNext) {
+                output.append(Character.toUpperCase(lowerCased.charAt(i)));
+                needToUpperNext = false;
+            } else {
+                output.append(lowerCased.charAt(i));
+            }
+            if (separators.contains(lowerCased.charAt(i))) {
+                needToUpperNext = true;
+            }
+        }
+        return output.toString();
+    }
 }
