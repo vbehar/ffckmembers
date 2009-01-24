@@ -231,7 +231,7 @@ public class MemberDetailsActivity extends Activity {
         ContentValues values = new ContentValues();
 
         // create a new contact with the name
-        values.put(Contacts.People.NAME, firstName + " " + lastName);
+        values.put(Contacts.PeopleColumns.NAME, firstName + " " + lastName);
         Uri uri = MemberDetailsActivity.this.getContentResolver().insert(
                 Contacts.People.CONTENT_URI, values);
 
@@ -239,14 +239,14 @@ public class MemberDetailsActivity extends Activity {
         Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
         if (!TextUtils.isEmpty(phoneMobile)) {
             values.clear();
-            values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_MOBILE);
-            values.put(Contacts.Phones.NUMBER, phoneMobile);
+            values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_MOBILE);
+            values.put(Contacts.PhonesColumns.NUMBER, phoneMobile);
             MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
         }
         if (!TextUtils.isEmpty(phoneHome)) {
             values.clear();
-            values.put(Contacts.Phones.TYPE, Contacts.Phones.TYPE_HOME);
-            values.put(Contacts.Phones.NUMBER, phoneHome);
+            values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_HOME);
+            values.put(Contacts.PhonesColumns.NUMBER, phoneHome);
             MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
         }
 
@@ -255,10 +255,10 @@ public class MemberDetailsActivity extends Activity {
             Uri emailUri = Uri.withAppendedPath(uri,
                     Contacts.People.ContactMethods.CONTENT_DIRECTORY);
             values.clear();
-            values.put(Contacts.People.ContactMethods.KIND, Contacts.KIND_EMAIL);
-            values.put(Contacts.People.ContactMethods.DATA, email);
-            values.put(Contacts.People.ContactMethods.TYPE,
-                    Contacts.People.ContactMethods.TYPE_HOME);
+            values.put(Contacts.ContactMethodsColumns.KIND, Contacts.KIND_EMAIL);
+            values.put(Contacts.ContactMethodsColumns.DATA, email);
+            values.put(Contacts.ContactMethodsColumns.TYPE,
+                    Contacts.ContactMethodsColumns.TYPE_HOME);
             MemberDetailsActivity.this.getContentResolver().insert(emailUri, values);
         }
 
@@ -294,7 +294,8 @@ public class MemberDetailsActivity extends Activity {
     /**
      * Retrieve the value in the given columnName, for the current member
      * 
-     * @param columnName for which the value should be retrieved (see Members.Columns)
+     * @param columnName for which the value should be retrieved (see
+     *            Members.Columns)
      * @return String : value retrieved
      */
     private String get(String columnName) {
