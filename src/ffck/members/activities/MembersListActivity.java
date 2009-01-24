@@ -79,14 +79,17 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
     /** Identifier for the 'About' dialog */
     private static final int DIALOG_ABOUT = 1;
 
+    /** Identifier for the 'Statistics' dialog */
+    private static final int DIALOG_STATS = 2;
+
     /** Identifier for the 'PICK_FILE activity not found' dialog */
-    private static final int DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND = 2;
+    private static final int DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND = 3;
 
     /** Identifier for the 'Delete all members' dialog */
-    private static final int DIALOG_DELETE_ALL_MEMBERS = 3;
+    private static final int DIALOG_DELETE_ALL_MEMBERS = 4;
 
     /** Identifier for the 'Progress bar while importing' dialog */
-    private static final int DIALOG_PROGRESS_IMPORT = 4;
+    private static final int DIALOG_PROGRESS_IMPORT = 5;
 
     /*
      * DB->View mapping
@@ -205,6 +208,9 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             case R.id.members_list_menu_about:
                 showDialog(DIALOG_ABOUT);
                 return true;
+            case R.id.members_list_menu_stats:
+                showDialog(DIALOG_STATS);
+                return true;
             case R.id.members_list_menu_delete_all:
                 showDialog(DIALOG_DELETE_ALL_MEMBERS);
                 return true;
@@ -229,6 +235,12 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                 about.setMessage(R.string.dialog_about_text);
                 about.setPositiveButton(R.string.dialog_about_button, null);
                 return about.create();
+            case DIALOG_STATS:
+                AlertDialog.Builder stats = new AlertDialog.Builder(this);
+                stats.setTitle(R.string.dialog_stats_title);
+                stats.setMessage(getString(R.string.dialog_stats_text, cursorAdapter.getCount()));
+                stats.setPositiveButton(R.string.dialog_stats_button, null);
+                return stats.create();
             case DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND:
                 AlertDialog.Builder pickFile = new AlertDialog.Builder(this);
                 pickFile.setIcon(android.R.drawable.ic_dialog_alert);

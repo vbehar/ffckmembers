@@ -45,6 +45,10 @@
     <string
         name="members_list_menu_import_shortcut">i</string>
     <string
+        name="members_list_menu_stats_label">Statistics</string>
+    <string
+        name="members_list_menu_stats_shortcut">s</string>
+    <string
         name="members_list_menu_preferences_label">Preferences</string>
     <string
         name="members_list_menu_preferences_shortcut">p</string>
@@ -70,6 +74,14 @@
         name="dialog_about_text">About Text...</string>
     <string
         name="dialog_about_button">Close</string>
+
+    <!-- Dialog 'Statistics' -->
+    <string
+        name="dialog_stats_title">Statistics</string>
+    <string
+        name="dialog_stats_text">%d members</string>
+    <string
+        name="dialog_stats_button">Close</string>
 
     <!-- Dialog 'Delete member' -->
     <string
