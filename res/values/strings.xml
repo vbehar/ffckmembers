@@ -21,6 +21,8 @@
 
     <!-- Preferences -->
     <string
+        name="preferences_title">Preferences</string>
+    <string
         name="preferences_names_key">names</string>
     <string
         name="preferences_names_title">Names format</string>
