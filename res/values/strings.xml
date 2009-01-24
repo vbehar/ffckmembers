@@ -22,14 +22,24 @@
     <!-- Preferences -->
     <string
         name="preferences_title">Preferences</string>
+    <!-- Names format -->
     <string
-        name="preferences_names_key">names</string>
+        name="preferences_names_format_key">names_format</string>
     <string
-        name="preferences_names_title">Names format</string>
+        name="preferences_names_format_title">Names format</string>
     <string
-        name="preferences_names_summary">Choose the format used to display names</string>
+        name="preferences_names_format_summary">Choose the format used to display names</string>
     <string
-        name="preferences_names_dialog_title">Names format to use :</string>
+        name="preferences_names_format_dialog_title">Names format to use :</string>
+    <!-- Last license -->
+    <string
+        name="preferences_last_license_key">last_license</string>
+    <string
+        name="preferences_last_license_title">Last license</string>
+    <string
+        name="preferences_last_license_summary">Filter members by last license year</string>
+    <string
+        name="preferences_last_license_dialog_title">License year to display :</string>
 
     <!-- MembersListActivity -->
     <string
@@ -153,4 +163,8 @@
         name="names_format_first_last">Firstname Lastname</string>
     <string
         name="names_format_last_first">Lastname Firstname</string>
+
+    <!-- Common strings -->
+    <string
+        name="all">All</string>
 </resources>

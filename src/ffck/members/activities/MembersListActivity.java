@@ -134,7 +134,8 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         setContentView(R.layout.members_list);
 
         // initialize the cursor (that contains the data from DB)
-        Cursor cursor = managedQuery(CONTENT_URI, PROJECTION, null, null, calculateOrderBy());
+        Cursor cursor = buildCursor();
+        startManagingCursor(cursor);
         codeColumnIndex = cursor.getColumnIndexOrThrow(CODE);
         cursorAdapter = new SimpleCursorAdapter(this, R.layout.members_list_item, cursor, FROM, TO);
         setListAdapter(cursorAdapter);
@@ -238,7 +239,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             case DIALOG_STATS:
                 AlertDialog.Builder stats = new AlertDialog.Builder(this);
                 stats.setTitle(R.string.dialog_stats_title);
-                stats.setMessage(getString(R.string.dialog_stats_text, cursorAdapter.getCount()));
+                stats.setMessage(getString(R.string.dialog_stats_text));
                 stats.setPositiveButton(R.string.dialog_stats_button, null);
                 return stats.create();
             case DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND:
@@ -274,16 +275,32 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         }
     }
 
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+
+        switch (id) {
+            case DIALOG_STATS:
+                ((AlertDialog)dialog).setMessage(getString(R.string.dialog_stats_text,
+                        cursorAdapter.getCount()));
+                break;
+            default:
+                break;
+        }
+    }
+
     /*
      * Preferences management
      */
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        // names format has changed -> we need to re-order the list
-        if (key.equals(getString(R.string.preferences_names_key))) {
+        // names format or year filtering has changed -> we need a new cursor
+        if (key.equals(getString(R.string.preferences_names_format_key))
+                || key.equals(getString(R.string.preferences_last_license_key))) {
             stopManagingCursor(cursorAdapter.getCursor());
-            Cursor newCursor = managedQuery(CONTENT_URI, PROJECTION, null, null, calculateOrderBy());
+            Cursor newCursor = buildCursor();
+            startManagingCursor(newCursor);
             cursorAdapter.changeCursor(newCursor);
         }
     }
@@ -346,6 +363,27 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
      */
 
     /**
+     * Build the cursor used by this list activity.<br />
+     * The cursor will have the proper filtering and ordering configured based
+     * on the preferences.
+     * 
+     * @return Cursor
+     */
+    private Cursor buildCursor() {
+        String selection = null;
+        String[] selectionArgs = null;
+        String lastLicenseSelection = calculateLastLicenseSelection();
+        if (!lastLicenseSelection.equals(getString(R.string.all))) {
+            selection = LAST_LICENSE + "=?";
+            selectionArgs = new String[] {
+                lastLicenseSelection
+            };
+        }
+        return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
+                calculateOrderBy());
+    }
+
+    /**
      * Delete all members. Will display a success message after deletion.
      */
     private void deleteAllMembers() {
@@ -358,7 +396,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
      */
     private String getNamesFormatPreference() {
         return PreferenceManager.getDefaultSharedPreferences(this).getString(
-                getString(R.string.preferences_names_key),
+                getString(R.string.preferences_names_format_key),
                 getString(R.string.names_format_last_first));
     }
 
@@ -373,6 +411,16 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             return LAST_NAME + " ASC";
         }
         return DEFAULT_ORDER_BY;
+    }
+
+    /**
+     * @return the last license selection from the preference
+     */
+    private String calculateLastLicenseSelection() {
+        String lastLicenseSelection = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.preferences_last_license_key),
+                        getString(R.string.all));
+        return lastLicenseSelection;
     }
 
     /*

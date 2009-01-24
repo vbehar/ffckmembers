@@ -19,10 +19,15 @@
     <PreferenceCategory
         android:title="@string/preferences_title" />
     <ListPreference
-        android:key="@string/preferences_names_key"
-        android:title="@string/preferences_names_title"
-        android:summary="@string/preferences_names_summary"
-        android:dialogTitle="@string/preferences_names_dialog_title"
+        android:key="@string/preferences_names_format_key"
+        android:title="@string/preferences_names_format_title"
+        android:summary="@string/preferences_names_format_summary"
+        android:dialogTitle="@string/preferences_names_format_dialog_title"
         android:entries="@array/names_format"
         android:entryValues="@array/names_format" />
+    <ListPreference
+        android:key="@string/preferences_last_license_key"
+        android:title="@string/preferences_last_license_title"
+        android:summary="@string/preferences_last_license_summary"
+        android:dialogTitle="@string/preferences_last_license_dialog_title" />
 </PreferenceScreen>
