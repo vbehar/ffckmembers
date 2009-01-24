@@ -22,6 +22,7 @@ import static ffck.members.Members.DEFAULT_ORDER_BY;
 import static ffck.members.Members.Columns.CODE;
 import static ffck.members.Members.Columns.FIRST_NAME;
 import static ffck.members.Members.Columns.GENDER;
+import static ffck.members.Members.Columns.LAST_LICENSE;
 import static ffck.members.Members.Columns.LAST_NAME;
 import static org.openintents.intents.FileManagerIntents.ACTION_PICK_FILE;
 import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
@@ -93,17 +94,18 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
 
     /** Projection used to specify the columns to retrieve from the database */
     private static final String[] PROJECTION = {
-            _ID, CODE, LAST_NAME, FIRST_NAME, GENDER
+            _ID, CODE, LAST_NAME, FIRST_NAME, GENDER, LAST_LICENSE
     };
 
     /** Source for the DB->View mapping : Columns names */
     private static final String[] FROM = {
-            GENDER, LAST_NAME
+            GENDER, LAST_NAME, LAST_LICENSE
     };
 
     /** Destination for the DB->View mapping : View IDs */
     private static final int[] TO = {
-            R.id.members_list_item_gender, R.id.members_list_item_names
+            R.id.members_list_item_gender, R.id.members_list_item_names,
+            R.id.members_list_item_last_license
     };
 
     /*

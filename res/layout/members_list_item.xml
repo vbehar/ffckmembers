@@ -14,19 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="10sp">
+    android:layout_gravity="center_vertical">
     <ImageView
         android:id="@+id/members_list_item_gender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10sp" />
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_marginBottom="10sp" />
+    <TextView
+        android:id="@+id/members_list_item_last_license"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_marginBottom="10sp" />
     <TextView
         android:id="@+id/members_list_item_names"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignTop="@id/members_list_item_gender"
+        android:layout_toRightOf="@id/members_list_item_gender"
+        android:layout_toLeftOf="@id/members_list_item_last_license" />
+</RelativeLayout>
