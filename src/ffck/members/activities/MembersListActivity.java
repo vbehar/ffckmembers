@@ -21,6 +21,7 @@ import static ffck.members.Members.CONTENT_URI;
 import static ffck.members.Members.DEFAULT_ORDER_BY;
 import static ffck.members.Members.Columns.CODE;
 import static ffck.members.Members.Columns.FIRST_NAME;
+import static ffck.members.Members.Columns.GENDER;
 import static ffck.members.Members.Columns.LAST_NAME;
 import static org.openintents.intents.FileManagerIntents.ACTION_PICK_FILE;
 import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
@@ -47,6 +48,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FilterQueryProvider;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -90,17 +92,18 @@ public class MembersListActivity extends ListActivity {
 
     /** Projection used to specify the columns to retrieve from the database */
     private static final String[] PROJECTION = {
-            _ID, CODE, LAST_NAME, FIRST_NAME
+            _ID, CODE, LAST_NAME, FIRST_NAME, GENDER
     };
 
     /** Source for the DB->View mapping : Columns names */
     private static final String[] FROM = {
-            LAST_NAME, FIRST_NAME
+            LAST_NAME, FIRST_NAME, GENDER
     };
 
     /** Destination for the DB->View mapping : View IDs */
     private static final int[] TO = {
-            R.id.members_list_item_last_name, R.id.members_list_item_first_name
+            R.id.members_list_item_last_name, R.id.members_list_item_first_name,
+            R.id.members_list_item_gender
     };
 
     /*
@@ -128,6 +131,9 @@ public class MembersListActivity extends ListActivity {
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.members_list_item,
                 cursor, FROM, TO);
         setListAdapter(adapter);
+
+        // we need custom view binding for the gender icon
+        adapter.setViewBinder(new MembersViewBinder());
 
         // enable filtering (see MembersFilterQueryProvider javadoc)
         getListView().setTextFilterEnabled(true);
@@ -354,7 +360,27 @@ public class MembersListActivity extends ListActivity {
             return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
                     DEFAULT_ORDER_BY);
         }
+    }
 
+    /**
+     * ViewBinder implementation for the FFCK Members. Allows to do custom
+     * binding for the gender icon (male or female).
+     */
+    private class MembersViewBinder implements SimpleCursorAdapter.ViewBinder {
+
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            if (view.getId() == R.id.members_list_item_gender) {
+                String gender = cursor.getString(columnIndex);
+                if ("M".equals(gender)) {
+                    ((ImageView)view).setImageResource(R.drawable.male);
+                } else if ("F".equals(gender)) {
+                    ((ImageView)view).setImageResource(R.drawable.female);
+                }
+                return true;
+            }
+            return false;
+        }
     }
 
 }

@@ -20,6 +20,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="10sp">
+    <ImageView
+        android:id="@+id/members_list_item_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dip" />
     <TextView
         android:id="@+id/members_list_item_last_name"
         android:layout_width="wrap_content"
