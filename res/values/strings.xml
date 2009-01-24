@@ -19,6 +19,16 @@
     <string
         name="app_name">FFCK Members</string>
 
+    <!-- Preferences -->
+    <string
+        name="preferences_names_key">names</string>
+    <string
+        name="preferences_names_title">Names format</string>
+    <string
+        name="preferences_names_summary">Choose the format used to display names</string>
+    <string
+        name="preferences_names_dialog_title">Names format to use :</string>
+
     <!-- MembersListActivity -->
     <string
         name="members_list_empty">No members to display...</string>
@@ -33,9 +43,9 @@
     <string
         name="members_list_menu_import_shortcut">i</string>
     <string
-        name="members_list_menu_help_label">Help</string>
+        name="members_list_menu_preferences_label">Preferences</string>
     <string
-        name="members_list_menu_help_shortcut">h</string>
+        name="members_list_menu_preferences_shortcut">p</string>
     <string
         name="members_list_menu_about_label">About</string>
     <string
@@ -58,14 +68,6 @@
         name="dialog_about_text">About Text...</string>
     <string
         name="dialog_about_button">Close</string>
-
-    <!-- Dialog 'Help' -->
-    <string
-        name="dialog_help_title">Help</string>
-    <string
-        name="dialog_help_text">Help Text...</string>
-    <string
-        name="dialog_help_button">Close</string>
 
     <!-- Dialog 'Delete member' -->
     <string
@@ -131,4 +133,10 @@
         name="toast_delete_member">%s %s successfully deleted !</string>
     <string
         name="toast_delete_all_members">All members successfully deleted !</string>
+
+    <!-- Arrays values -->
+    <string
+        name="names_format_first_last">Firstname Lastname</string>
+    <string
+        name="names_format_last_first">Lastname Firstname</string>
 </resources>

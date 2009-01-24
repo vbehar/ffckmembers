@@ -30,10 +30,10 @@
     </group>
     <group>
         <item
-            android:id="@+id/members_list_menu_help"
-            android:title="@string/members_list_menu_help_label"
-            android:alphabeticShortcut="@string/members_list_menu_help_shortcut"
-            android:icon="@android:drawable/ic_menu_help" />
+            android:id="@+id/members_list_menu_preferences"
+            android:title="@string/members_list_menu_preferences_label"
+            android:alphabeticShortcut="@string/members_list_menu_preferences_shortcut"
+            android:icon="@android:drawable/ic_menu_preferences" />
         <item
             android:id="@+id/members_list_menu_about"
             android:title="@string/members_list_menu_about_label"

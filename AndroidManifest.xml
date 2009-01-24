@@ -64,5 +64,9 @@
                     android:mimeType="vnd.android.cursor.item/vnd.ffck.member" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.MembersPreferenceActivity"
+            android:label="@string/app_name">
+        </activity>
     </application>
 </manifest>

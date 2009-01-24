@@ -37,11 +37,14 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +54,7 @@ import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -59,7 +63,7 @@ import java.io.File;
  * FFCK Members list activity. Display a list of all members, and supports
  * filtering. Also provides a menu.
  */
-public class MembersListActivity extends ListActivity {
+public class MembersListActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
     /** The requestCode for the PICK_FILE intent activity result */
     private static final int REQUEST_CODE_PICK_FILE = 1;
@@ -74,17 +78,14 @@ public class MembersListActivity extends ListActivity {
     /** Identifier for the 'About' dialog */
     private static final int DIALOG_ABOUT = 1;
 
-    /** Identifier for the 'Help' dialog */
-    private static final int DIALOG_HELP = 2;
-
     /** Identifier for the 'PICK_FILE activity not found' dialog */
-    private static final int DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND = 3;
+    private static final int DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND = 2;
 
     /** Identifier for the 'Delete all members' dialog */
-    private static final int DIALOG_DELETE_ALL_MEMBERS = 4;
+    private static final int DIALOG_DELETE_ALL_MEMBERS = 3;
 
     /** Identifier for the 'Progress bar while importing' dialog */
-    private static final int DIALOG_PROGRESS_IMPORT = 5;
+    private static final int DIALOG_PROGRESS_IMPORT = 4;
 
     /*
      * DB->View mapping
@@ -97,18 +98,20 @@ public class MembersListActivity extends ListActivity {
 
     /** Source for the DB->View mapping : Columns names */
     private static final String[] FROM = {
-            LAST_NAME, FIRST_NAME, GENDER
+            GENDER, LAST_NAME
     };
 
     /** Destination for the DB->View mapping : View IDs */
     private static final int[] TO = {
-            R.id.members_list_item_last_name, R.id.members_list_item_first_name,
-            R.id.members_list_item_gender
+            R.id.members_list_item_gender, R.id.members_list_item_names
     };
 
     /*
      * Instance-specific variables
      */
+
+    /** The cursor listAdapter used for managing the DB->View binding */
+    private SimpleCursorAdapter cursorAdapter;
 
     /** The index of the 'code' column (retrieved only once) */
     private int codeColumnIndex = -1;
@@ -126,18 +129,21 @@ public class MembersListActivity extends ListActivity {
         setContentView(R.layout.members_list);
 
         // initialize the cursor (that contains the data from DB)
-        Cursor cursor = managedQuery(CONTENT_URI, PROJECTION, null, null, DEFAULT_ORDER_BY);
+        Cursor cursor = managedQuery(CONTENT_URI, PROJECTION, null, null, calculateOrderBy());
         codeColumnIndex = cursor.getColumnIndexOrThrow(CODE);
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.members_list_item,
-                cursor, FROM, TO);
-        setListAdapter(adapter);
+        cursorAdapter = new SimpleCursorAdapter(this, R.layout.members_list_item, cursor, FROM, TO);
+        setListAdapter(cursorAdapter);
 
-        // we need custom view binding for the gender icon
-        adapter.setViewBinder(new MembersViewBinder());
+        // we need custom DB->View binding (see MembersViewBinder javadoc)
+        cursorAdapter.setViewBinder(new MembersViewBinder());
 
         // enable filtering (see MembersFilterQueryProvider javadoc)
         getListView().setTextFilterEnabled(true);
-        adapter.setFilterQueryProvider(new MembersFilterQueryProvider());
+        cursorAdapter.setFilterQueryProvider(new MembersFilterQueryProvider());
+
+        // listen to preferences changes
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -191,11 +197,11 @@ public class MembersListActivity extends ListActivity {
 
         // when a menu item is selected :
         switch (item.getItemId()) {
+            case R.id.members_list_menu_preferences:
+                startActivity(new Intent(this, MembersPreferenceActivity.class));
+                return true;
             case R.id.members_list_menu_about:
                 showDialog(DIALOG_ABOUT);
-                return true;
-            case R.id.members_list_menu_help:
-                showDialog(DIALOG_HELP);
                 return true;
             case R.id.members_list_menu_delete_all:
                 showDialog(DIALOG_DELETE_ALL_MEMBERS);
@@ -221,12 +227,6 @@ public class MembersListActivity extends ListActivity {
                 about.setMessage(R.string.dialog_about_text);
                 about.setPositiveButton(R.string.dialog_about_button, null);
                 return about.create();
-            case DIALOG_HELP:
-                AlertDialog.Builder help = new AlertDialog.Builder(this);
-                help.setTitle(R.string.dialog_help_title);
-                help.setMessage(R.string.dialog_help_text);
-                help.setPositiveButton(R.string.dialog_help_button, null);
-                return help.create();
             case DIALOG_PICK_FILE_ACTIVITY_NOT_FOUND:
                 AlertDialog.Builder pickFile = new AlertDialog.Builder(this);
                 pickFile.setIcon(android.R.drawable.ic_dialog_alert);
@@ -257,6 +257,20 @@ public class MembersListActivity extends ListActivity {
                 return progressImport;
             default:
                 return null;
+        }
+    }
+
+    /*
+     * Preferences management
+     */
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // names format has changed -> we need to re-order the list
+        if (key.equals(getString(R.string.preferences_names_key))) {
+            stopManagingCursor(cursorAdapter.getCursor());
+            Cursor newCursor = managedQuery(CONTENT_URI, PROJECTION, null, null, calculateOrderBy());
+            cursorAdapter.changeCursor(newCursor);
         }
     }
 
@@ -325,6 +339,28 @@ public class MembersListActivity extends ListActivity {
         Toast.makeText(this, R.string.toast_delete_all_members, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * @return the names format from the preference.
+     */
+    private String getNamesFormatPreference() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(
+                getString(R.string.preferences_names_key),
+                getString(R.string.names_format_last_first));
+    }
+
+    /**
+     * @return the orderBy clause based on the names format preference
+     */
+    private String calculateOrderBy() {
+        String namesFormat = getNamesFormatPreference();
+        if (getString(R.string.names_format_first_last).equals(namesFormat)) {
+            return FIRST_NAME + " ASC";
+        } else if (getString(R.string.names_format_last_first).equals(namesFormat)) {
+            return LAST_NAME + " ASC";
+        }
+        return DEFAULT_ORDER_BY;
+    }
+
     /*
      * Inner classes
      */
@@ -364,12 +400,14 @@ public class MembersListActivity extends ListActivity {
 
     /**
      * ViewBinder implementation for the FFCK Members. Allows to do custom
-     * binding for the gender icon (male or female).
+     * binding for the gender icon (male or female) and the names (format
+     * accordingly to preferences).
      */
     private class MembersViewBinder implements SimpleCursorAdapter.ViewBinder {
 
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            // correctly map the gender icon
             if (view.getId() == R.id.members_list_item_gender) {
                 String gender = cursor.getString(columnIndex);
                 if ("M".equals(gender)) {
@@ -379,6 +417,20 @@ public class MembersListActivity extends ListActivity {
                 }
                 return true;
             }
+
+            // format names accordingly to preferences
+            if (view.getId() == R.id.members_list_item_names) {
+                String firstName = cursor.getString(cursor.getColumnIndex(FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndex(LAST_NAME));
+                String namesFormat = getNamesFormatPreference();
+                if (getString(R.string.names_format_first_last).equals(namesFormat)) {
+                    ((TextView)view).setText(firstName + " " + lastName);
+                } else if (getString(R.string.names_format_last_first).equals(namesFormat)) {
+                    ((TextView)view).setText(lastName + " " + firstName);
+                }
+                return true;
+            }
+
             return false;
         }
     }
