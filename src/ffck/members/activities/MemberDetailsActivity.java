@@ -16,35 +16,17 @@
 
 package ffck.members.activities;
 
-import static ffck.members.Members.CONTENT_URI;
-import static ffck.members.Members.Columns.ADDRESS;
-import static ffck.members.Members.Columns.BIRTH_DATE;
-import static ffck.members.Members.Columns.CITY;
-import static ffck.members.Members.Columns.CODE;
-import static ffck.members.Members.Columns.COUNTRY;
-import static ffck.members.Members.Columns.EMAIL;
-import static ffck.members.Members.Columns.EMAIL_2;
-import static ffck.members.Members.Columns.FIRST_NAME;
-import static ffck.members.Members.Columns.GENDER;
-import static ffck.members.Members.Columns.LAST_LICENSE;
-import static ffck.members.Members.Columns.LAST_NAME;
-import static ffck.members.Members.Columns.PHONE_HOME;
-import static ffck.members.Members.Columns.PHONE_MOBILE;
-import static ffck.members.Members.Columns.PHONE_MOBILE_2;
-import static ffck.members.Members.Columns.PHONE_OTHER;
-import static ffck.members.Members.Columns.POSTAL_CODE;
+import ffck.members.Member;
 import ffck.members.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Contacts;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,12 +35,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * FFCK Member details activity. Display the details of a member, and allow to
@@ -81,8 +57,8 @@ public class MemberDetailsActivity extends Activity {
      * Instance-specific variables
      */
 
-    /** The cursor holding the member's data */
-    private Cursor cursor;
+    /** The member for which we display the details */
+    private Member member;
 
     /*
      * Activity lifecycle
@@ -95,7 +71,7 @@ public class MemberDetailsActivity extends Activity {
 
         // retrieve the cursor for the member represented by the URI
         Uri uri = getIntent().getData();
-        cursor = managedQuery(uri, null, null, null, null);
+        Cursor cursor = managedQuery(uri, null, null, null, null);
 
         // nothing found, let's just going back...
         if (cursor == null || !cursor.moveToFirst()) {
@@ -104,8 +80,9 @@ public class MemberDetailsActivity extends Activity {
             return;
         }
 
-        // bind the cursor's data to the view
-        bindData();
+        // bind the member's data to the view
+        member = new Member(cursor);
+        bindMember();
     }
 
     /*
@@ -154,8 +131,8 @@ public class MemberDetailsActivity extends Activity {
                 AlertDialog.Builder addToContacts = new AlertDialog.Builder(this);
                 addToContacts.setIcon(android.R.drawable.ic_dialog_alert);
                 addToContacts.setTitle(R.string.dialog_add_to_contacts_title);
-                addToContacts.setMessage(getString(R.string.dialog_add_to_contacts_text,
-                        get(FIRST_NAME), get(LAST_NAME)));
+                addToContacts.setMessage(getString(R.string.dialog_add_to_contacts_text, member
+                        .getFirstName(), member.getLastName()));
                 addToContacts.setPositiveButton(R.string.dialog_add_to_contacts_button_ok,
                         new OnClickListener() {
                             @Override
@@ -169,8 +146,8 @@ public class MemberDetailsActivity extends Activity {
                 AlertDialog.Builder delete = new AlertDialog.Builder(this);
                 delete.setIcon(android.R.drawable.ic_dialog_alert);
                 delete.setTitle(R.string.dialog_delete_member_title);
-                delete.setMessage(getString(R.string.dialog_delete_member_text, get(FIRST_NAME),
-                        get(LAST_NAME)));
+                delete.setMessage(getString(R.string.dialog_delete_member_text, member
+                        .getFirstName(), member.getLastName()));
                 delete.setPositiveButton(R.string.dialog_delete_member_button_ok,
                         new OnClickListener() {
                             @Override
@@ -194,48 +171,13 @@ public class MemberDetailsActivity extends Activity {
      * contacts. Will display a success message after adding.
      */
     private void addToContacts() {
-        String firstName = get(FIRST_NAME);
-        String lastName = get(LAST_NAME);
-        String phoneMobile = get(PHONE_MOBILE);
-        String phoneHome = get(PHONE_HOME);
-        String email = get(EMAIL);
-
-        ContentValues values = new ContentValues();
-
-        // create a new contact with the name
-        values.put(Contacts.PeopleColumns.NAME, firstName + " " + lastName);
-        Uri uri = getContentResolver().insert(Contacts.People.CONTENT_URI, values);
-
-        // add the phone numbers
-        Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
-        if (!TextUtils.isEmpty(phoneMobile)) {
-            values.clear();
-            values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_MOBILE);
-            values.put(Contacts.PhonesColumns.NUMBER, phoneMobile);
-            getContentResolver().insert(phoneUri, values);
-        }
-        if (!TextUtils.isEmpty(phoneHome)) {
-            values.clear();
-            values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_HOME);
-            values.put(Contacts.PhonesColumns.NUMBER, phoneHome);
-            getContentResolver().insert(phoneUri, values);
-        }
-
-        // add the email
-        if (!TextUtils.isEmpty(email)) {
-            Uri emailUri = Uri.withAppendedPath(uri,
-                    Contacts.People.ContactMethods.CONTENT_DIRECTORY);
-            values.clear();
-            values.put(Contacts.ContactMethodsColumns.KIND, Contacts.KIND_EMAIL);
-            values.put(Contacts.ContactMethodsColumns.DATA, email);
-            values.put(Contacts.ContactMethodsColumns.TYPE,
-                    Contacts.ContactMethodsColumns.TYPE_HOME);
-            getContentResolver().insert(emailUri, values);
-        }
+        member.addToContacts(this);
 
         // display success message (toaster)
-        Toast.makeText(this, getString(R.string.toast_add_member_to_contacts, firstName, lastName),
-                Toast.LENGTH_LONG).show();
+        Toast.makeText(
+                this,
+                getString(R.string.toast_add_member_to_contacts, member.getFirstName(), member
+                        .getLastName()), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -244,13 +186,14 @@ public class MemberDetailsActivity extends Activity {
      */
     private void deleteMember() {
         // delete the member
-        Uri uri = Uri.withAppendedPath(CONTENT_URI, get(CODE));
-        getContentResolver().delete(uri, null, null);
+        getContentResolver().delete(member.getUri(), null, null);
 
         // display success message (toaster)
-        Toast.makeText(this,
-                getString(R.string.toast_delete_member, get(FIRST_NAME), get(LAST_NAME)),
-                Toast.LENGTH_SHORT).show();
+        Toast
+                .makeText(
+                        this,
+                        getString(R.string.toast_delete_member, member.getFirstName(), member
+                                .getLastName()), Toast.LENGTH_SHORT).show();
 
         // finish the activity
         setResult(Activity.RESULT_OK);
@@ -262,11 +205,11 @@ public class MemberDetailsActivity extends Activity {
      */
 
     /**
-     * Bind the data from the cursor to the views
+     * Bind the member's data to the views
      */
-    private void bindData() {
+    private void bindMember() {
         // gender icon
-        if (cursor.getString(cursor.getColumnIndexOrThrow(GENDER)).equals("M")) {
+        if (member.isMale()) {
             ((ImageView)findViewById(R.id.member_details_gender_icon))
                     .setImageResource(R.drawable.paddler_male);
         } else {
@@ -275,91 +218,55 @@ public class MemberDetailsActivity extends Activity {
         }
 
         // name and license
-        ((TextView)findViewById(R.id.member_details_fullname)).setText(get(FIRST_NAME) + " "
-                + get(LAST_NAME));
-        ((TextView)findViewById(R.id.member_details_last_license)).setText(get(LAST_LICENSE));
-        ((TextView)findViewById(R.id.member_details_code)).setText(get(CODE));
+        ((TextView)findViewById(R.id.member_details_fullname)).setText(member.getFullName());
+        ((TextView)findViewById(R.id.member_details_last_license)).setText(member.getLastLicense());
+        ((TextView)findViewById(R.id.member_details_code)).setText(member.getCode());
 
         // birth date and age
-        String birthDate = get(BIRTH_DATE);
-        ((TextView)findViewById(R.id.member_details_birth_date)).setText(birthDate);
-        ((TextView)findViewById(R.id.member_details_age)).setText(calculateAge(birthDate));
+        ((TextView)findViewById(R.id.member_details_birth_date)).setText(member
+                .getBirthDateAsString());
+        ((TextView)findViewById(R.id.member_details_age)).setText(String.valueOf(member
+                .calculateAge()));
 
         // phone numbers
-        String phoneMobile = get(PHONE_MOBILE);
-        if (TextUtils.isEmpty(phoneMobile)) {
+        if (TextUtils.isEmpty(member.getPhoneMobile())) {
             findViewById(R.id.member_details_section_phone_mobile).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_phone_mobile)).setText(phoneMobile);
+            ((TextView)findViewById(R.id.member_details_phone_mobile)).setText(member
+                    .getPhoneMobile());
         }
-        String phoneMobile2 = get(PHONE_MOBILE_2);
-        if (TextUtils.isEmpty(phoneMobile2)) {
+        if (TextUtils.isEmpty(member.getPhoneMobile2())) {
             findViewById(R.id.member_details_section_phone_mobile_2).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_phone_mobile_2)).setText(phoneMobile2);
+            ((TextView)findViewById(R.id.member_details_phone_mobile_2)).setText(member
+                    .getPhoneMobile2());
         }
-        String phoneHome = get(PHONE_HOME);
-        if (TextUtils.isEmpty(phoneHome)) {
+        if (TextUtils.isEmpty(member.getPhoneHome())) {
             findViewById(R.id.member_details_section_phone_home).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_phone_home)).setText(phoneHome);
+            ((TextView)findViewById(R.id.member_details_phone_home)).setText(member.getPhoneHome());
         }
-        String phoneOther = get(PHONE_OTHER);
-        if (TextUtils.isEmpty(phoneOther)) {
+        if (TextUtils.isEmpty(member.getPhoneOther())) {
             findViewById(R.id.member_details_section_phone_other).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_phone_other)).setText(phoneOther);
+            ((TextView)findViewById(R.id.member_details_phone_other)).setText(member
+                    .getPhoneOther());
         }
 
         // e-mails
-        String email = get(EMAIL);
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(member.getEmail())) {
             findViewById(R.id.member_details_section_email).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_email)).setText(email);
+            ((TextView)findViewById(R.id.member_details_email)).setText(member.getEmail());
         }
-        String email2 = get(EMAIL_2);
-        if (TextUtils.isEmpty(email2)) {
+        if (TextUtils.isEmpty(member.getEmail2())) {
             findViewById(R.id.member_details_section_email_2).setVisibility(View.GONE);
         } else {
-            ((TextView)findViewById(R.id.member_details_email_2)).setText(email2);
+            ((TextView)findViewById(R.id.member_details_email_2)).setText(member.getEmail2());
         }
 
         // address
-        ((TextView)findViewById(R.id.member_details_address)).setText(get(ADDRESS) + "\n"
-                + get(POSTAL_CODE) + " " + get(CITY) + "\n" + get(COUNTRY));
-    }
-
-    /**
-     * Retrieve the value in the given columnName, for the current member
-     * 
-     * @param columnName for which the value should be retrieved (see
-     *            Members.Columns)
-     * @return String : value retrieved
-     */
-    private String get(String columnName) {
-        return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
-    }
-
-    /**
-     * Calculate the age (in years), from the given birthDate.
-     * 
-     * @param birthDateAsString format "dd/MM/yyyy"
-     * @return age in years, converted as a String
-     */
-    private String calculateAge(String birthDateAsString) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
-        Date birthDate = null;
-        try {
-            birthDate = formatter.parse(birthDateAsString);
-        } catch (ParseException e) {
-            birthDate = new Date();
-        }
-        long ageInMilliSeconds = System.currentTimeMillis() - birthDate.getTime();
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(ageInMilliSeconds);
-        int ageInYears = cal.get(Calendar.YEAR) - 1970;
-        return String.valueOf(ageInYears);
+        ((TextView)findViewById(R.id.member_details_address)).setText(member.getFullAddress());
     }
 
 }
