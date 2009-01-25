@@ -232,8 +232,7 @@ public class MemberDetailsActivity extends Activity {
 
         // create a new contact with the name
         values.put(Contacts.PeopleColumns.NAME, firstName + " " + lastName);
-        Uri uri = MemberDetailsActivity.this.getContentResolver().insert(
-                Contacts.People.CONTENT_URI, values);
+        Uri uri = getContentResolver().insert(Contacts.People.CONTENT_URI, values);
 
         // add the phone numbers
         Uri phoneUri = Uri.withAppendedPath(uri, Contacts.People.Phones.CONTENT_DIRECTORY);
@@ -241,13 +240,13 @@ public class MemberDetailsActivity extends Activity {
             values.clear();
             values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_MOBILE);
             values.put(Contacts.PhonesColumns.NUMBER, phoneMobile);
-            MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+            getContentResolver().insert(phoneUri, values);
         }
         if (!TextUtils.isEmpty(phoneHome)) {
             values.clear();
             values.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_HOME);
             values.put(Contacts.PhonesColumns.NUMBER, phoneHome);
-            MemberDetailsActivity.this.getContentResolver().insert(phoneUri, values);
+            getContentResolver().insert(phoneUri, values);
         }
 
         // add the email
@@ -259,12 +258,11 @@ public class MemberDetailsActivity extends Activity {
             values.put(Contacts.ContactMethodsColumns.DATA, email);
             values.put(Contacts.ContactMethodsColumns.TYPE,
                     Contacts.ContactMethodsColumns.TYPE_HOME);
-            MemberDetailsActivity.this.getContentResolver().insert(emailUri, values);
+            getContentResolver().insert(emailUri, values);
         }
 
         // display success message (toaster)
-        Toast.makeText(MemberDetailsActivity.this,
-                getString(R.string.toast_add_member_to_contacts, firstName, lastName),
+        Toast.makeText(this, getString(R.string.toast_add_member_to_contacts, firstName, lastName),
                 Toast.LENGTH_LONG).show();
     }
 
@@ -278,7 +276,7 @@ public class MemberDetailsActivity extends Activity {
         getContentResolver().delete(uri, null, null);
 
         // display success message (toaster)
-        Toast.makeText(MemberDetailsActivity.this,
+        Toast.makeText(this,
                 getString(R.string.toast_delete_member, get(FIRST_NAME), get(LAST_NAME)),
                 Toast.LENGTH_SHORT).show();
 
