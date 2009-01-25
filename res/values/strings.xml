@@ -43,7 +43,9 @@
 
     <!-- MembersListActivity -->
     <string
-        name="members_list_empty">No members to display...</string>
+        name="members_list_empty">No members to display...\n\n Use Menu/Import to
+        import
+        members from a CSV file.</string>
 
     <!-- MembersListActivity's menu -->
     <string
