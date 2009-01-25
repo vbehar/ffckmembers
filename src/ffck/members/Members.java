@@ -25,20 +25,8 @@ import android.provider.BaseColumns;
  */
 public interface Members {
 
-    /** Members table name in the database */
-    String TABLE_NAME = "members";
-
-    /** Authority used by the content provider */
-    String AUTHORITY = "ffck.members";
-
     /** Content URI used by the content provider */
-    Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
-
-    /** The MIME type for a directory of members */
-    String CONTENT_TYPE_DIR = "vnd.android.cursor.dir/vnd.ffck.member";
-
-    /** The MIME type for a single member */
-    String CONTENT_TYPE_ITEM = "vnd.android.cursor.item/vnd.ffck.member";
+    Uri CONTENT_URI = Uri.parse("content://ffck.members/members");
 
     /** The default 'order by' for sorting lists */
     String DEFAULT_ORDER_BY = Columns.LAST_NAME + " ASC";

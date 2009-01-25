@@ -17,11 +17,7 @@
 package ffck.members.provider;
 
 import static android.provider.BaseColumns._ID;
-import static ffck.members.Members.AUTHORITY;
-import static ffck.members.Members.CONTENT_TYPE_DIR;
-import static ffck.members.Members.CONTENT_TYPE_ITEM;
 import static ffck.members.Members.DEFAULT_ORDER_BY;
-import static ffck.members.Members.TABLE_NAME;
 import static ffck.members.Members.Columns.ADDRESS;
 import static ffck.members.Members.Columns.BIRTH_DATE;
 import static ffck.members.Members.Columns.CITY;
@@ -62,6 +58,8 @@ public class MembersProvider extends ContentProvider {
 
     private static final int MATCH_MEMBER = 2;
 
+    private static final String MEMBERS_TABLE = "members";
+
     private DatabaseHelper dbHelper;
 
     /*
@@ -70,8 +68,8 @@ public class MembersProvider extends ContentProvider {
 
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(AUTHORITY, "members", MATCH_MEMBERS);
-        URI_MATCHER.addURI(AUTHORITY, "members/*", MATCH_MEMBER);
+        URI_MATCHER.addURI("ffck.members", "members", MATCH_MEMBERS);
+        URI_MATCHER.addURI("ffck.members", "members/*", MATCH_MEMBER);
     }
 
     /*
@@ -88,7 +86,7 @@ public class MembersProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String orderBy) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TABLE_NAME);
+        queryBuilder.setTables(MEMBERS_TABLE);
 
         switch (URI_MATCHER.match(uri)) {
             case MATCH_MEMBERS:
@@ -118,9 +116,9 @@ public class MembersProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (URI_MATCHER.match(uri)) {
             case MATCH_MEMBERS:
-                return CONTENT_TYPE_DIR;
+                return "vnd.android.cursor.dir/vnd.ffck.member";
             case MATCH_MEMBER:
-                return CONTENT_TYPE_ITEM;
+                return "vnd.android.cursor.item/vnd.ffck.member";
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -134,7 +132,7 @@ public class MembersProvider extends ContentProvider {
         }
 
         // Insert into database
-        dbHelper.getWritableDatabase().insertOrThrow(TABLE_NAME, null, values);
+        dbHelper.getWritableDatabase().insertOrThrow(MEMBERS_TABLE, null, values);
 
         // Notify any watchers of the change
         Uri newUri = Uri.withAppendedPath(Members.CONTENT_URI, uri.getLastPathSegment());
@@ -149,10 +147,10 @@ public class MembersProvider extends ContentProvider {
 
         switch (URI_MATCHER.match(uri)) {
             case MATCH_MEMBERS:
-                count = db.delete(TABLE_NAME, selection, selectionArgs);
+                count = db.delete(MEMBERS_TABLE, selection, selectionArgs);
                 break;
             case MATCH_MEMBER:
-                count = db.delete(TABLE_NAME, CODE + "=?", new String[] {
+                count = db.delete(MEMBERS_TABLE, CODE + "=?", new String[] {
                     uri.getLastPathSegment()
                 });
                 break;
@@ -172,10 +170,10 @@ public class MembersProvider extends ContentProvider {
 
         switch (URI_MATCHER.match(uri)) {
             case MATCH_MEMBERS:
-                count = db.update(TABLE_NAME, values, selection, selectionArgs);
+                count = db.update(MEMBERS_TABLE, values, selection, selectionArgs);
                 break;
             case MATCH_MEMBER:
-                count = db.update(TABLE_NAME, values, CODE + "=?", new String[] {
+                count = db.update(MEMBERS_TABLE, values, CODE + "=?", new String[] {
                     uri.getLastPathSegment()
                 });
                 break;
@@ -242,7 +240,7 @@ public class MembersProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             StringBuilder sql = new StringBuilder();
-            sql.append("CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME).append(" (");
+            sql.append("CREATE TABLE IF NOT EXISTS ").append(MEMBERS_TABLE).append(" (");
             sql.append(_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
             sql.append(CODE).append(" TEXT UNIQUE NOT NULL, ");
             sql.append(FIRST_NAME).append(" TEXT NOT NULL, ");
