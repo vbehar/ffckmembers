@@ -16,9 +16,7 @@
 
 package ffck.members.activities;
 
-import static ffck.members.Member.CONTENT_URI;
-import static ffck.members.Member.ID;
-import static ffck.members.Member.LAST_LICENSE;
+import ffck.members.Member;
 import ffck.members.R;
 
 import android.database.Cursor;
@@ -55,10 +53,10 @@ public class MembersPreferenceActivity extends PreferenceActivity {
      * @return array of string containing all licenses year (from the DB)
      */
     private String[] retrieveAllLicenseYears() {
-        Cursor cursor = getContentResolver().query(CONTENT_URI, new String[] {
-                ID, LAST_LICENSE
-        }, null, null, LAST_LICENSE + " DESC");
-        int columnIndex = cursor.getColumnIndexOrThrow(LAST_LICENSE);
+        Cursor cursor = getContentResolver().query(Member.CONTENT_URI, new String[] {
+                Member.ID, Member.LAST_LICENSE
+        }, null, null, Member.LAST_LICENSE + " DESC");
+        int columnIndex = cursor.getColumnIndexOrThrow(Member.LAST_LICENSE);
         List<String> licenseYears = new ArrayList<String>();
         licenseYears.add(getString(R.string.all));
         while (cursor.moveToNext()) {
