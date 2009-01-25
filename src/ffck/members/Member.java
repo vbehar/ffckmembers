@@ -16,8 +16,6 @@
 
 package ffck.members;
 
-import ffck.members.Members.Columns;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -42,9 +40,6 @@ public class Member {
 
     /** Content URI used by the content provider */
     public static final Uri CONTENT_URI = Uri.parse("content://ffck.members/members");
-
-    /** The default 'order by' for sorting lists */
-    public static final String DEFAULT_ORDER_BY = Columns.LAST_NAME + " ASC";
 
     /** Unique identifier for a member (integer) */
     public static final String ID = BaseColumns._ID;
@@ -108,6 +103,9 @@ public class Member {
 
     /** value of GENDER field if member is a female */
     public static final String GENDER_FEMALE = "F";
+
+    /** The default 'order by' for sorting lists */
+    public static final String DEFAULT_ORDER_BY = LAST_NAME + " ASC";
 
     /*
      * Instance attributes
