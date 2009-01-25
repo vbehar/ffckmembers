@@ -14,66 +14,430 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:scrollbars="none">
-    <TableLayout
+    android:orientation="vertical">
+
+    <!-- Header banner with icon and name -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:drawable/title_bar"
+        android:gravity="center_vertical">
+        <ImageView
+            android:id="@+id/member_details_gender_icon"
+            style="?android:attr/imageWellStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dip" />
+        <TextView
+            android:id="@+id/member_details_fullname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:shadowColor="#BB000000" />
+    </LinearLayout>
+
+    <!-- Scroll for data -->
+    <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:padding="10sp">
-        <TableRow
-            android:gravity="center"
-            android:layout_marginBottom="10sp">
+        android:layout_height="wrap_content">
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <!-- FFCK License -->
             <TextView
-                android:id="@+id/member_details_first_name"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_marginRight="10sp" />
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@drawable/dark_header_dithered"
+                android:text="@string/member_details_section_license"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingLeft="8dip" />
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_last_license"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_last_license"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_code"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_code"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+
+            <!-- Birth date and age -->
             <TextView
-                android:id="@+id/member_details_last_name"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-        </TableRow>
-        <TableRow>
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@drawable/dark_header_dithered"
+                android:text="@string/member_details_section_birth_date"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingLeft="8dip" />
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_birth_date"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_birth_date"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_age"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_age"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+
+            <!-- Phone numbers -->
             <TextView
-                android:id="@+id/member_details_gender" />
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@drawable/dark_header_dithered"
+                android:text="@string/member_details_section_phones"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingLeft="8dip" />
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_phone_mobile"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_phone_mobile"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_phone_mobile"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="phone"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_phone_mobile_2"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_phone_mobile_2"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_phone_mobile_2"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="phone"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_phone_home"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_phone_home"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_phone_home"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="phone"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_phone_other"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_phone_other"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_phone_other"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="phone"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+
+            <!-- E-mails -->
             <TextView
-                android:id="@+id/member_details_birth_date" />
-        </TableRow>
-        <TableRow>
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@drawable/dark_header_dithered"
+                android:text="@string/member_details_section_emails"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingLeft="8dip" />
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_email"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_email"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_email"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="email"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/member_details_section_email_2"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_email_2"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_email_2"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:autoLink="email"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+
+            <!-- Address -->
             <TextView
-                android:id="@+id/member_details_phone_mobile" />
-            <TextView
-                android:id="@+id/member_details_phone_mobile_2" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/member_details_phone_home" />
-            <TextView
-                android:id="@+id/member_details_phone_other" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/member_details_email" />
-            <TextView
-                android:id="@+id/member_details_email_2" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/member_details_address" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/member_details_postal_code" />
-            <TextView
-                android:id="@+id/member_details_city" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/member_details_code" />
-            <TextView
-                android:id="@+id/member_details_last_license" />
-        </TableRow>
-    </TableLayout>
-</ScrollView>
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@drawable/dark_header_dithered"
+                android:text="@string/member_details_section_address"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingLeft="8dip" />
+            <ImageView
+                style="?android:attr/imageWellStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark" />
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="false"
+                    android:text="@string/member_details_label_address"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_address"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="false"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

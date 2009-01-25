@@ -47,6 +47,40 @@
         import
         members from a CSV file.</string>
 
+    <!-- MemberDetailsActivity -->
+    <string
+        name="member_details_section_license">FFCK License</string>
+    <string
+        name="member_details_label_last_license">Last license</string>
+    <string
+        name="member_details_label_code">License code</string>
+    <string
+        name="member_details_section_birth_date">Birth date and age</string>
+    <string
+        name="member_details_label_birth_date">Birth date</string>
+    <string
+        name="member_details_label_age">Age</string>
+    <string
+        name="member_details_section_phones">Phone numbers</string>
+    <string
+        name="member_details_label_phone_mobile">Mobile</string>
+    <string
+        name="member_details_label_phone_mobile_2">Mobile 2</string>
+    <string
+        name="member_details_label_phone_home">Home</string>
+    <string
+        name="member_details_label_phone_other">Other</string>
+    <string
+        name="member_details_section_emails">Emails</string>
+    <string
+        name="member_details_label_email">Email</string>
+    <string
+        name="member_details_label_email_2">Email 2</string>
+    <string
+        name="member_details_section_address">Address</string>
+    <string
+        name="member_details_label_address">Address</string>
+
     <!-- MembersListActivity's menu -->
     <string
         name="members_list_menu_delete_all_label">Delete all</string>

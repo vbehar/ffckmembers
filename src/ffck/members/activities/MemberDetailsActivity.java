@@ -21,6 +21,7 @@ import static ffck.members.Members.Columns.ADDRESS;
 import static ffck.members.Members.Columns.BIRTH_DATE;
 import static ffck.members.Members.Columns.CITY;
 import static ffck.members.Members.Columns.CODE;
+import static ffck.members.Members.Columns.COUNTRY;
 import static ffck.members.Members.Columns.EMAIL;
 import static ffck.members.Members.Columns.EMAIL_2;
 import static ffck.members.Members.Columns.FIRST_NAME;
@@ -45,15 +46,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Contacts;
 import android.text.TextUtils;
-import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * FFCK Member details activity. Display the details of a member, and allow to
@@ -71,32 +76,6 @@ public class MemberDetailsActivity extends Activity {
 
     /** Identifier for the 'Delete' dialog */
     private static final int DIALOG_DELETE = 2;
-
-    /*
-     * DB->View mapping
-     */
-
-    /** Fields that will be 'linkified' */
-    private static final List<String> LINKIFIED_FIELDS = Arrays.asList(new String[] {
-            PHONE_HOME, PHONE_MOBILE, PHONE_MOBILE_2, PHONE_OTHER, EMAIL, EMAIL_2
-    });
-
-    /** Source for the DB->View mapping : Columns names */
-    private static final String[] FROM = {
-            LAST_NAME, FIRST_NAME, GENDER, BIRTH_DATE, PHONE_MOBILE, PHONE_MOBILE_2, PHONE_HOME,
-            PHONE_OTHER, EMAIL, EMAIL_2, ADDRESS, POSTAL_CODE, CITY, CODE, LAST_LICENSE
-    };
-
-    /** Destination for the DB->View mapping : View IDs */
-    private static final int[] TO = {
-            R.id.member_details_last_name, R.id.member_details_first_name,
-            R.id.member_details_gender, R.id.member_details_birth_date,
-            R.id.member_details_phone_mobile, R.id.member_details_phone_mobile_2,
-            R.id.member_details_phone_home, R.id.member_details_phone_other,
-            R.id.member_details_email, R.id.member_details_email_2, R.id.member_details_address,
-            R.id.member_details_postal_code, R.id.member_details_city, R.id.member_details_code,
-            R.id.member_details_last_license
-    };
 
     /*
      * Instance-specific variables
@@ -125,15 +104,8 @@ public class MemberDetailsActivity extends Activity {
             return;
         }
 
-        // map the cursor's data to the view
-        for (int i = 0; i < TO.length; i++) {
-            TextView view = (TextView)findViewById(TO[i]);
-            String text = cursor.getString(cursor.getColumnIndexOrThrow(FROM[i]));
-            view.setText(text);
-            if (LINKIFIED_FIELDS.contains(FROM[i])) {
-                Linkify.addLinks(view, Linkify.ALL);
-            }
-        }
+        // bind the cursor's data to the view
+        bindData();
     }
 
     /*
@@ -290,6 +262,75 @@ public class MemberDetailsActivity extends Activity {
      */
 
     /**
+     * Bind the data from the cursor to the views
+     */
+    private void bindData() {
+        // gender icon
+        if (cursor.getString(cursor.getColumnIndexOrThrow(GENDER)).equals("M")) {
+            ((ImageView)findViewById(R.id.member_details_gender_icon))
+                    .setImageResource(R.drawable.paddler_male);
+        } else {
+            ((ImageView)findViewById(R.id.member_details_gender_icon))
+                    .setImageResource(R.drawable.paddler_female);
+        }
+
+        // name and license
+        ((TextView)findViewById(R.id.member_details_fullname)).setText(get(FIRST_NAME) + " "
+                + get(LAST_NAME));
+        ((TextView)findViewById(R.id.member_details_last_license)).setText(get(LAST_LICENSE));
+        ((TextView)findViewById(R.id.member_details_code)).setText(get(CODE));
+
+        // birth date and age
+        String birthDate = get(BIRTH_DATE);
+        ((TextView)findViewById(R.id.member_details_birth_date)).setText(birthDate);
+        ((TextView)findViewById(R.id.member_details_age)).setText(calculateAge(birthDate));
+
+        // phone numbers
+        String phoneMobile = get(PHONE_MOBILE);
+        if (TextUtils.isEmpty(phoneMobile)) {
+            findViewById(R.id.member_details_section_phone_mobile).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_phone_mobile)).setText(phoneMobile);
+        }
+        String phoneMobile2 = get(PHONE_MOBILE_2);
+        if (TextUtils.isEmpty(phoneMobile2)) {
+            findViewById(R.id.member_details_section_phone_mobile_2).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_phone_mobile_2)).setText(phoneMobile2);
+        }
+        String phoneHome = get(PHONE_HOME);
+        if (TextUtils.isEmpty(phoneHome)) {
+            findViewById(R.id.member_details_section_phone_home).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_phone_home)).setText(phoneHome);
+        }
+        String phoneOther = get(PHONE_OTHER);
+        if (TextUtils.isEmpty(phoneOther)) {
+            findViewById(R.id.member_details_section_phone_other).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_phone_other)).setText(phoneOther);
+        }
+
+        // e-mails
+        String email = get(EMAIL);
+        if (TextUtils.isEmpty(email)) {
+            findViewById(R.id.member_details_section_email).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_email)).setText(email);
+        }
+        String email2 = get(EMAIL_2);
+        if (TextUtils.isEmpty(email2)) {
+            findViewById(R.id.member_details_section_email_2).setVisibility(View.GONE);
+        } else {
+            ((TextView)findViewById(R.id.member_details_email_2)).setText(email2);
+        }
+
+        // address
+        ((TextView)findViewById(R.id.member_details_address)).setText(get(ADDRESS) + "\n"
+                + get(POSTAL_CODE) + " " + get(CITY) + "\n" + get(COUNTRY));
+    }
+
+    /**
      * Retrieve the value in the given columnName, for the current member
      * 
      * @param columnName for which the value should be retrieved (see
@@ -298,6 +339,27 @@ public class MemberDetailsActivity extends Activity {
      */
     private String get(String columnName) {
         return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
+    }
+
+    /**
+     * Calculate the age (in years), from the given birthDate.
+     * 
+     * @param birthDateAsString format "dd/MM/yyyy"
+     * @return age in years, converted as a String
+     */
+    private String calculateAge(String birthDateAsString) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
+        Date birthDate = null;
+        try {
+            birthDate = formatter.parse(birthDateAsString);
+        } catch (ParseException e) {
+            birthDate = new Date();
+        }
+        long ageInMilliSeconds = System.currentTimeMillis() - birthDate.getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(ageInMilliSeconds);
+        int ageInYears = cal.get(Calendar.YEAR) - 1970;
+        return String.valueOf(ageInYears);
     }
 
 }
