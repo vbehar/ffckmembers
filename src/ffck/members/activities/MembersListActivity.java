@@ -134,7 +134,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         setContentView(R.layout.members_list);
 
         // initialize the cursor (that contains the data from DB)
-        Cursor cursor = buildCursor();
+        Cursor cursor = buildCursor(null, null);
         startManagingCursor(cursor);
         codeColumnIndex = cursor.getColumnIndexOrThrow(CODE);
         cursorAdapter = new SimpleCursorAdapter(this, R.layout.members_list_item, cursor, FROM, TO);
@@ -299,7 +299,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         if (key.equals(getString(R.string.preferences_names_format_key))
                 || key.equals(getString(R.string.preferences_last_license_key))) {
             stopManagingCursor(cursorAdapter.getCursor());
-            Cursor newCursor = buildCursor();
+            Cursor newCursor = buildCursor(null, null);
             startManagingCursor(newCursor);
             cursorAdapter.changeCursor(newCursor);
         }
@@ -378,19 +378,34 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
     /**
      * Build the cursor used by this list activity.<br />
      * The cursor will have the proper filtering and ordering configured based
-     * on the preferences.
+     * on the preferences (plus your own if you provide a
+     * selection/selectionArgs WHERE clause).
      * 
+     * @param selection parameters (WHERE clause)
+     * @param selectionArgs arguments for the WHERE clause, as an array of
+     *            Strings
      * @return Cursor
      */
-    private Cursor buildCursor() {
-        String selection = null;
-        String[] selectionArgs = null;
+    private Cursor buildCursor(String selection, String[] selectionArgs) {
         String lastLicenseSelection = calculateLastLicenseSelection();
         if (!lastLicenseSelection.equals(getString(R.string.all))) {
-            selection = LAST_LICENSE + "=?";
-            selectionArgs = new String[] {
-                lastLicenseSelection
-            };
+            if (selection == null) {
+                selection = LAST_LICENSE + "=?";
+            } else {
+                selection = selection + " AND " + LAST_LICENSE + "=?";
+            }
+            if (selectionArgs == null) {
+                selectionArgs = new String[] {
+                    lastLicenseSelection
+                };
+            } else {
+                String[] newArgs = new String[selectionArgs.length + 1];
+                for (int i = 0; i < selectionArgs.length; i++) {
+                    newArgs[i] = selectionArgs[i];
+                }
+                newArgs[selectionArgs.length] = lastLicenseSelection;
+                selectionArgs = newArgs;
+            }
         }
         return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
                 calculateOrderBy());
@@ -455,9 +470,11 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             if (!TextUtils.isEmpty(constraint)) {
                 // build the WHERE cause
                 StringBuilder selectionBuilder = new StringBuilder();
-                selectionBuilder.append("UPPER(").append(LAST_NAME).append(") GLOB ?");
+                selectionBuilder.append(" ( ");
+                selectionBuilder.append("( UPPER(").append(LAST_NAME).append(") GLOB ? )");
                 selectionBuilder.append(" OR ");
-                selectionBuilder.append("UPPER(").append(FIRST_NAME).append(") GLOB ?");
+                selectionBuilder.append("( UPPER(").append(FIRST_NAME).append(") GLOB ? )");
+                selectionBuilder.append(" ) ");
                 selection = selectionBuilder.toString();
 
                 // and the associated search term
@@ -467,9 +484,8 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                 };
             }
 
-            // execute the query and return the new cursor
-            return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
-                    calculateOrderBy());
+            // build and return the new cursor
+            return buildCursor(selection, selectionArgs);
         }
     }
 
