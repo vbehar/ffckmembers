@@ -16,20 +16,11 @@
 
 package ffck.members.activities;
 
-import static android.provider.BaseColumns._ID;
-import static ffck.members.Members.CONTENT_URI;
-import static ffck.members.Members.DEFAULT_ORDER_BY;
-import static ffck.members.Members.Columns.CODE;
-import static ffck.members.Members.Columns.FIRST_NAME;
-import static ffck.members.Members.Columns.GENDER;
-import static ffck.members.Members.Columns.LAST_LICENSE;
-import static ffck.members.Members.Columns.LAST_NAME;
-import static org.openintents.intents.FileManagerIntents.ACTION_PICK_FILE;
-import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
-import static org.openintents.intents.FileManagerIntents.EXTRA_TITLE;
 import ffck.members.Member;
 import ffck.members.MembersCsvImporter;
 import ffck.members.R;
+
+import org.openintents.intents.FileManagerIntents;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -97,12 +88,13 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
 
     /** Projection used to specify the columns to retrieve from the database */
     private static final String[] PROJECTION = {
-            _ID, CODE, LAST_NAME, FIRST_NAME, GENDER, LAST_LICENSE
+            Member.ID, Member.CODE, Member.LAST_NAME, Member.FIRST_NAME, Member.GENDER,
+            Member.LAST_LICENSE
     };
 
     /** Source for the DB->View mapping : Columns names */
     private static final String[] FROM = {
-            GENDER, LAST_NAME, LAST_LICENSE
+            Member.GENDER, Member.LAST_NAME, Member.LAST_LICENSE
     };
 
     /** Destination for the DB->View mapping : View IDs */
@@ -136,7 +128,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         // initialize the cursor (that contains the data from DB)
         Cursor cursor = buildCursor(null, null);
         startManagingCursor(cursor);
-        codeColumnIndex = cursor.getColumnIndexOrThrow(CODE);
+        codeColumnIndex = cursor.getColumnIndexOrThrow(Member.CODE);
         cursorAdapter = new SimpleCursorAdapter(this, R.layout.members_list_item, cursor, FROM, TO);
         setListAdapter(cursorAdapter);
 
@@ -175,7 +167,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         String code = cursor.getString(codeColumnIndex);
 
         // Display the selected member (using a specific content provider URI)
-        Uri uri = Uri.withAppendedPath(CONTENT_URI, code);
+        Uri uri = Uri.withAppendedPath(Member.CONTENT_URI, code);
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
@@ -314,10 +306,12 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
      * OpenIntents PICK_FILE intent to find a matching activity.
      */
     private void selectFileToImport() {
-        Intent intent = new Intent(ACTION_PICK_FILE);
+        Intent intent = new Intent(FileManagerIntents.ACTION_PICK_FILE);
         intent.setData(Uri.fromFile(IMPORT_CSV_DEFAULT_PATH));
-        intent.putExtra(EXTRA_TITLE, getString(R.string.import_csv_pick_file_title));
-        intent.putExtra(EXTRA_BUTTON_TEXT, getString(R.string.import_csv_pick_file_button));
+        intent.putExtra(FileManagerIntents.EXTRA_TITLE,
+                getString(R.string.import_csv_pick_file_title));
+        intent.putExtra(FileManagerIntents.EXTRA_BUTTON_TEXT,
+                getString(R.string.import_csv_pick_file_button));
         try {
             startActivityForResult(intent, REQUEST_CODE_PICK_FILE);
         } catch (ActivityNotFoundException e) {
@@ -347,10 +341,11 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                     // only import if new or newer than the existing entry
                     // (based on lastLicense)
                     Cursor cursor = getContentResolver().query(member.getUri(), new String[] {
-                            _ID, LAST_LICENSE
+                            Member.ID, Member.LAST_LICENSE
                     }, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
-                        int lastLicenseDB = cursor.getInt(cursor.getColumnIndex(LAST_LICENSE));
+                        int lastLicenseDB = cursor.getInt(cursor
+                                .getColumnIndex(Member.LAST_LICENSE));
                         cursor.close();
                         if (Integer.parseInt(member.getLastLicense()) >= lastLicenseDB) {
                             getContentResolver().update(member.getUri(), member.getValues(), null,
@@ -389,9 +384,9 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
         String lastLicenseSelection = calculateLastLicenseSelection();
         if (!lastLicenseSelection.equals(getString(R.string.all))) {
             if (selection == null) {
-                selection = LAST_LICENSE + "=?";
+                selection = Member.LAST_LICENSE + "=?";
             } else {
-                selection = selection + " AND " + LAST_LICENSE + "=?";
+                selection = selection + " AND " + Member.LAST_LICENSE + "=?";
             }
             if (selectionArgs == null) {
                 selectionArgs = new String[] {
@@ -406,7 +401,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                 selectionArgs = newArgs;
             }
         }
-        return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
+        return getContentResolver().query(Member.CONTENT_URI, PROJECTION, selection, selectionArgs,
                 calculateOrderBy());
     }
 
@@ -414,7 +409,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
      * Delete all members. Will display a success message after deletion.
      */
     private void deleteAllMembers() {
-        getContentResolver().delete(CONTENT_URI, null, null);
+        getContentResolver().delete(Member.CONTENT_URI, null, null);
         Toast.makeText(this, R.string.toast_delete_all_members, Toast.LENGTH_SHORT).show();
     }
 
@@ -433,11 +428,11 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
     private String calculateOrderBy() {
         String namesFormat = getNamesFormatPreference();
         if (getString(R.string.names_format_first_last).equals(namesFormat)) {
-            return FIRST_NAME + " ASC";
+            return Member.FIRST_NAME + " ASC";
         } else if (getString(R.string.names_format_last_first).equals(namesFormat)) {
-            return LAST_NAME + " ASC";
+            return Member.LAST_NAME + " ASC";
         }
-        return DEFAULT_ORDER_BY;
+        return Member.DEFAULT_ORDER_BY;
     }
 
     /**
@@ -470,9 +465,9 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                 // build the WHERE cause
                 StringBuilder selectionBuilder = new StringBuilder();
                 selectionBuilder.append(" ( ");
-                selectionBuilder.append("( UPPER(").append(LAST_NAME).append(") GLOB ? )");
+                selectionBuilder.append("( UPPER(").append(Member.LAST_NAME).append(") GLOB ? )");
                 selectionBuilder.append(" OR ");
-                selectionBuilder.append("( UPPER(").append(FIRST_NAME).append(") GLOB ? )");
+                selectionBuilder.append("( UPPER(").append(Member.FIRST_NAME).append(") GLOB ? )");
                 selectionBuilder.append(" ) ");
                 selection = selectionBuilder.toString();
 
@@ -510,8 +505,8 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
 
             // format names accordingly to preferences
             if (view.getId() == R.id.members_list_item_names) {
-                String firstName = cursor.getString(cursor.getColumnIndex(FIRST_NAME));
-                String lastName = cursor.getString(cursor.getColumnIndex(LAST_NAME));
+                String firstName = cursor.getString(cursor.getColumnIndex(Member.FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndex(Member.LAST_NAME));
                 String namesFormat = getNamesFormatPreference();
                 if (getString(R.string.names_format_first_last).equals(namesFormat)) {
                     ((TextView)view).setText(firstName + " " + lastName);
