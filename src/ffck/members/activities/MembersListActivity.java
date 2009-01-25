@@ -469,7 +469,7 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
 
             // execute the query and return the new cursor
             return getContentResolver().query(CONTENT_URI, PROJECTION, selection, selectionArgs,
-                    DEFAULT_ORDER_BY);
+                    calculateOrderBy());
         }
     }
 
