@@ -16,25 +16,7 @@
 
 package ffck.members.provider;
 
-import static android.provider.BaseColumns._ID;
-import static ffck.members.Members.DEFAULT_ORDER_BY;
-import static ffck.members.Members.Columns.ADDRESS;
-import static ffck.members.Members.Columns.BIRTH_DATE;
-import static ffck.members.Members.Columns.CITY;
-import static ffck.members.Members.Columns.CODE;
-import static ffck.members.Members.Columns.COUNTRY;
-import static ffck.members.Members.Columns.EMAIL;
-import static ffck.members.Members.Columns.EMAIL_2;
-import static ffck.members.Members.Columns.FIRST_NAME;
-import static ffck.members.Members.Columns.GENDER;
-import static ffck.members.Members.Columns.LAST_LICENSE;
-import static ffck.members.Members.Columns.LAST_NAME;
-import static ffck.members.Members.Columns.PHONE_HOME;
-import static ffck.members.Members.Columns.PHONE_MOBILE;
-import static ffck.members.Members.Columns.PHONE_MOBILE_2;
-import static ffck.members.Members.Columns.PHONE_OTHER;
-import static ffck.members.Members.Columns.POSTAL_CODE;
-import ffck.members.Members;
+import ffck.members.Member;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -92,7 +74,7 @@ public class MembersProvider extends ContentProvider {
             case MATCH_MEMBERS:
                 break;
             case MATCH_MEMBER:
-                queryBuilder.appendWhere(CODE + "=?");
+                queryBuilder.appendWhere(Member.CODE + "=?");
                 selectionArgs = safePrepend(uri.getLastPathSegment(), selectionArgs);
                 break;
             default:
@@ -101,7 +83,7 @@ public class MembersProvider extends ContentProvider {
 
         // if no sort order is specified use the default
         if (TextUtils.isEmpty(orderBy)) {
-            orderBy = DEFAULT_ORDER_BY;
+            orderBy = Member.DEFAULT_ORDER_BY;
         }
 
         // run the query and return the results as a Cursor
@@ -135,7 +117,7 @@ public class MembersProvider extends ContentProvider {
         dbHelper.getWritableDatabase().insertOrThrow(MEMBERS_TABLE, null, values);
 
         // Notify any watchers of the change
-        Uri newUri = Uri.withAppendedPath(Members.CONTENT_URI, uri.getLastPathSegment());
+        Uri newUri = Uri.withAppendedPath(Member.CONTENT_URI, uri.getLastPathSegment());
         getContext().getContentResolver().notifyChange(newUri, null);
         return newUri;
     }
@@ -150,7 +132,7 @@ public class MembersProvider extends ContentProvider {
                 count = db.delete(MEMBERS_TABLE, selection, selectionArgs);
                 break;
             case MATCH_MEMBER:
-                count = db.delete(MEMBERS_TABLE, CODE + "=?", new String[] {
+                count = db.delete(MEMBERS_TABLE, Member.CODE + "=?", new String[] {
                     uri.getLastPathSegment()
                 });
                 break;
@@ -173,7 +155,7 @@ public class MembersProvider extends ContentProvider {
                 count = db.update(MEMBERS_TABLE, values, selection, selectionArgs);
                 break;
             case MATCH_MEMBER:
-                count = db.update(MEMBERS_TABLE, values, CODE + "=?", new String[] {
+                count = db.update(MEMBERS_TABLE, values, Member.CODE + "=?", new String[] {
                     uri.getLastPathSegment()
                 });
                 break;
@@ -241,23 +223,23 @@ public class MembersProvider extends ContentProvider {
         public void onCreate(SQLiteDatabase db) {
             StringBuilder sql = new StringBuilder();
             sql.append("CREATE TABLE IF NOT EXISTS ").append(MEMBERS_TABLE).append(" (");
-            sql.append(_ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
-            sql.append(CODE).append(" TEXT UNIQUE NOT NULL, ");
-            sql.append(FIRST_NAME).append(" TEXT NOT NULL, ");
-            sql.append(LAST_NAME).append(" TEXT NOT NULL, ");
-            sql.append(BIRTH_DATE).append(" TEXT, ");
-            sql.append(GENDER).append(" TEXT, ");
-            sql.append(ADDRESS).append(" TEXT, ");
-            sql.append(POSTAL_CODE).append(" TEXT, ");
-            sql.append(CITY).append(" TEXT, ");
-            sql.append(COUNTRY).append(" TEXT, ");
-            sql.append(PHONE_HOME).append(" TEXT, ");
-            sql.append(PHONE_OTHER).append(" TEXT, ");
-            sql.append(PHONE_MOBILE).append(" TEXT, ");
-            sql.append(PHONE_MOBILE_2).append(" TEXT, ");
-            sql.append(EMAIL).append(" TEXT, ");
-            sql.append(EMAIL_2).append(" TEXT, ");
-            sql.append(LAST_LICENSE).append(" TEXT");
+            sql.append(Member.ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT, ");
+            sql.append(Member.CODE).append(" TEXT UNIQUE NOT NULL, ");
+            sql.append(Member.FIRST_NAME).append(" TEXT NOT NULL, ");
+            sql.append(Member.LAST_NAME).append(" TEXT NOT NULL, ");
+            sql.append(Member.BIRTH_DATE).append(" TEXT, ");
+            sql.append(Member.GENDER).append(" TEXT, ");
+            sql.append(Member.ADDRESS).append(" TEXT, ");
+            sql.append(Member.POSTAL_CODE).append(" TEXT, ");
+            sql.append(Member.CITY).append(" TEXT, ");
+            sql.append(Member.COUNTRY).append(" TEXT, ");
+            sql.append(Member.PHONE_HOME).append(" TEXT, ");
+            sql.append(Member.PHONE_OTHER).append(" TEXT, ");
+            sql.append(Member.PHONE_MOBILE).append(" TEXT, ");
+            sql.append(Member.PHONE_MOBILE_2).append(" TEXT, ");
+            sql.append(Member.EMAIL).append(" TEXT, ");
+            sql.append(Member.EMAIL_2).append(" TEXT, ");
+            sql.append(Member.LAST_LICENSE).append(" TEXT");
             sql.append(");");
             db.execSQL(sql.toString());
         }
