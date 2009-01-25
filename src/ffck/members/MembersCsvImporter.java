@@ -16,23 +16,6 @@
 
 package ffck.members;
 
-import static ffck.members.Members.Columns.ADDRESS;
-import static ffck.members.Members.Columns.BIRTH_DATE;
-import static ffck.members.Members.Columns.CITY;
-import static ffck.members.Members.Columns.CODE;
-import static ffck.members.Members.Columns.COUNTRY;
-import static ffck.members.Members.Columns.EMAIL;
-import static ffck.members.Members.Columns.EMAIL_2;
-import static ffck.members.Members.Columns.FIRST_NAME;
-import static ffck.members.Members.Columns.GENDER;
-import static ffck.members.Members.Columns.LAST_LICENSE;
-import static ffck.members.Members.Columns.LAST_NAME;
-import static ffck.members.Members.Columns.PHONE_HOME;
-import static ffck.members.Members.Columns.PHONE_MOBILE;
-import static ffck.members.Members.Columns.PHONE_MOBILE_2;
-import static ffck.members.Members.Columns.PHONE_OTHER;
-import static ffck.members.Members.Columns.POSTAL_CODE;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.text.TextUtils;
@@ -76,22 +59,22 @@ public class MembersCsvImporter {
      */
 
     static {
-        MAPPING.put("CODE ADHERENT", CODE);
-        MAPPING.put("NOM", LAST_NAME);
-        MAPPING.put("PRENOM", FIRST_NAME);
-        MAPPING.put("NE LE", BIRTH_DATE);
-        MAPPING.put("SEXE", GENDER);
-        MAPPING.put("ADRESSE", ADDRESS);
-        MAPPING.put("CODE POSTAL", POSTAL_CODE);
-        MAPPING.put("VILLE", CITY);
-        MAPPING.put("PAYS", COUNTRY);
-        MAPPING.put("TEL", PHONE_HOME);
-        MAPPING.put("AUTRE TEL", PHONE_OTHER);
-        MAPPING.put("MOBILE", PHONE_MOBILE);
-        MAPPING.put("EMAIL", EMAIL);
-        MAPPING.put("AUTRE MOBILE", PHONE_MOBILE_2);
-        MAPPING.put("AUTRE EMAIL", EMAIL_2);
-        MAPPING.put("DERNIERE LICENCE", LAST_LICENSE);
+        MAPPING.put("CODE ADHERENT", Member.CODE);
+        MAPPING.put("NOM", Member.LAST_NAME);
+        MAPPING.put("PRENOM", Member.FIRST_NAME);
+        MAPPING.put("NE LE", Member.BIRTH_DATE);
+        MAPPING.put("SEXE", Member.GENDER);
+        MAPPING.put("ADRESSE", Member.ADDRESS);
+        MAPPING.put("CODE POSTAL", Member.POSTAL_CODE);
+        MAPPING.put("VILLE", Member.CITY);
+        MAPPING.put("PAYS", Member.COUNTRY);
+        MAPPING.put("TEL", Member.PHONE_HOME);
+        MAPPING.put("AUTRE TEL", Member.PHONE_OTHER);
+        MAPPING.put("MOBILE", Member.PHONE_MOBILE);
+        MAPPING.put("EMAIL", Member.EMAIL);
+        MAPPING.put("AUTRE MOBILE", Member.PHONE_MOBILE_2);
+        MAPPING.put("AUTRE EMAIL", Member.EMAIL_2);
+        MAPPING.put("DERNIERE LICENCE", Member.LAST_LICENSE);
     }
 
     /*
@@ -131,40 +114,41 @@ public class MembersCsvImporter {
 
     /**
      * Read the next line from the CSV file, parse the data and convert them as
-     * ContentValues (that could be inserted into the database).
+     * a Member instance.
      * 
-     * @return ContentValues instance representing a member, or null is an error
-     *         occurs or if we hit the end of the file.
+     * @return Member instance, or null is an error occurs or if we hit the end
+     *         of the file.
      */
-    public ContentValues nextMember() {
-        String[] values = null;
+    public Member nextMember() {
+        String[] original = null;
         try {
-            values = readNextTokens();
+            original = readNextTokens();
         } catch (IOException e) {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        if (values == null) {
+        if (original == null) {
             return null;
         }
 
-        ContentValues member = new ContentValues();
-        for (int i = 0; i < values.length; i++) {
+        ContentValues values = new ContentValues();
+        for (int i = 0; i < original.length; i++) {
             String column = MAPPING.get(header[i]);
             if (column != null) {
-                String value = values[i];
+                String value = original[i];
 
                 // clean names...
-                if (column.equals(FIRST_NAME) || column.equals(LAST_NAME)) {
+                if (column.equals(Member.FIRST_NAME) || column.equals(Member.LAST_NAME)) {
                     value = capitalize(value);
                 }
                 // ... and cities & countries
-                if (column.equals(CITY) || column.equals(COUNTRY)) {
+                if (column.equals(Member.CITY) || column.equals(Member.COUNTRY)) {
                     value = capitalize(value);
                 }
 
                 // clean phone numbers
-                if (column.equals(PHONE_HOME) || column.equals(PHONE_MOBILE)
-                        || column.equals(PHONE_MOBILE_2) || column.equals(PHONE_OTHER)) {
+                if (column.equals(Member.PHONE_HOME) || column.equals(Member.PHONE_MOBILE)
+                        || column.equals(Member.PHONE_MOBILE_2)
+                        || column.equals(Member.PHONE_OTHER)) {
                     if (!TextUtils.isEmpty(value)) {
                         value = value.replaceAll("\\.", "");
                         value = value.replaceFirst("0", "+33");
@@ -172,32 +156,32 @@ public class MembersCsvImporter {
                 }
 
                 // fix gender code
-                if (column.equals(GENDER)) {
+                if (column.equals(Member.GENDER)) {
                     if ("H".equals(value)) { // H = 'Homme'
-                        value = "M"; // M = 'Male'
+                        value = Member.GENDER_MALE;
                     }
                 }
 
                 // address has the same header twice in the CSV...
-                if (column.equals(ADDRESS)) {
+                if (column.equals(Member.ADDRESS)) {
                     value = value.toLowerCase(Locale.FRANCE);
-                    if (member.containsKey(column)) {
+                    if (values.containsKey(column)) {
                         if (TextUtils.isEmpty(value)) {
-                            value = member.getAsString(column);
+                            value = values.getAsString(column);
                         } else {
-                            value = member.getAsString(column) + "\n" + value;
+                            value = values.getAsString(column) + "\n" + value;
                         }
                     }
                 }
 
-                member.put(column, value);
+                values.put(column, value);
             }
         }
 
-        if (member.size() == 0) {
+        if (values.size() == 0) {
             return null;
         }
-        return member;
+        return new Member(values);
     }
 
     /*

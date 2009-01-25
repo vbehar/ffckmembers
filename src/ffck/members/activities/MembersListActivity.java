@@ -27,6 +27,7 @@ import static ffck.members.Members.Columns.LAST_NAME;
 import static org.openintents.intents.FileManagerIntents.ACTION_PICK_FILE;
 import static org.openintents.intents.FileManagerIntents.EXTRA_BUTTON_TEXT;
 import static org.openintents.intents.FileManagerIntents.EXTRA_TITLE;
+import ffck.members.Member;
 import ffck.members.MembersCsvImporter;
 import ffck.members.R;
 
@@ -35,7 +36,6 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -342,23 +342,22 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                     }
                 });
                 MembersCsvImporter importer = new MembersCsvImporter(MembersListActivity.this, path);
-                ContentValues member = null;
+                Member member = null;
                 while ((member = importer.nextMember()) != null) {
-                    String code = member.getAsString(CODE);
-                    Uri uri = Uri.withAppendedPath(CONTENT_URI, code);
                     // only import if new or newer than the existing entry
                     // (based on lastLicense)
-                    Cursor cursor = getContentResolver().query(uri, new String[] {
+                    Cursor cursor = getContentResolver().query(member.getUri(), new String[] {
                             _ID, LAST_LICENSE
                     }, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         int lastLicenseDB = cursor.getInt(cursor.getColumnIndex(LAST_LICENSE));
                         cursor.close();
-                        if (member.getAsInteger(LAST_LICENSE) >= lastLicenseDB) {
-                            getContentResolver().update(uri, member, null, null);
+                        if (Integer.parseInt(member.getLastLicense()) >= lastLicenseDB) {
+                            getContentResolver().update(member.getUri(), member.getValues(), null,
+                                    null);
                         }
                     } else {
-                        getContentResolver().insert(uri, member);
+                        getContentResolver().insert(member.getUri(), member.getValues());
                     }
                 }
                 handler.post(new Runnable() {
