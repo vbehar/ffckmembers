@@ -134,8 +134,7 @@ public class MembersProvider extends ContentProvider {
         }
 
         // Insert into database
-        // we use 'replace' because in fact it's a 'insertOrReplace'
-        dbHelper.getWritableDatabase().replaceOrThrow(TABLE_NAME, null, values);
+        dbHelper.getWritableDatabase().insertOrThrow(TABLE_NAME, null, values);
 
         // Notify any watchers of the change
         Uri newUri = Uri.withAppendedPath(Members.CONTENT_URI, uri.getLastPathSegment());

@@ -346,7 +346,20 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
                 while ((member = importer.nextMember()) != null) {
                     String code = member.getAsString(CODE);
                     Uri uri = Uri.withAppendedPath(CONTENT_URI, code);
-                    getContentResolver().insert(uri, member);
+                    // only import if new or newer than the existing entry
+                    // (based on lastLicense)
+                    Cursor cursor = getContentResolver().query(uri, new String[] {
+                            _ID, LAST_LICENSE
+                    }, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int lastLicenseDB = cursor.getInt(cursor.getColumnIndex(LAST_LICENSE));
+                        cursor.close();
+                        if (member.getAsInteger(LAST_LICENSE) >= lastLicenseDB) {
+                            getContentResolver().update(uri, member, null, null);
+                        }
+                    } else {
+                        getContentResolver().insert(uri, member);
+                    }
                 }
                 handler.post(new Runnable() {
                     @Override
