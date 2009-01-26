@@ -35,7 +35,7 @@ import java.util.Date;
 public class Member {
 
     /*
-     * Static fields
+     * Constants
      */
 
     /** Content URI used by the content provider */
@@ -108,7 +108,7 @@ public class Member {
     public static final String DEFAULT_ORDER_BY = LAST_NAME + " ASC";
 
     /*
-     * Instance attributes
+     * Attributes
      */
 
     /** Date formatter (for the birth date) */
