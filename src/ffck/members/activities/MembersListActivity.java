@@ -502,9 +502,9 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             // correctly map the gender icon
             if (view.getId() == R.id.members_list_item_gender) {
                 String gender = cursor.getString(columnIndex);
-                if ("M".equals(gender)) {
+                if (Member.GENDER_MALE.equals(gender)) {
                     ((ImageView)view).setImageResource(R.drawable.male);
-                } else if ("F".equals(gender)) {
+                } else if (Member.GENDER_FEMALE.equals(gender)) {
                     ((ImageView)view).setImageResource(R.drawable.female);
                 }
                 return true;
