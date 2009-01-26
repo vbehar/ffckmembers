@@ -204,6 +204,10 @@
     <string
         name="toast_delete_all_members">All members successfully deleted !</string>
 
+    <!-- Add member to contacts -->
+    <string
+        name="contacts_phone_label_mobile2">Mobile 2</string>
+
     <!-- Arrays values -->
     <string
         name="names_format_first_last">Firstname Lastname</string>

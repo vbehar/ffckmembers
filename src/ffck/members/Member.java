@@ -253,24 +253,55 @@ public class Member {
             buffer.put(Contacts.PhonesColumns.NUMBER, getPhoneMobile());
             context.getContentResolver().insert(phoneUri, buffer);
         }
+        if (!TextUtils.isEmpty(getPhoneMobile2())) {
+            buffer.clear();
+            buffer.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_CUSTOM);
+            buffer.put(Contacts.PhonesColumns.LABEL, context
+                    .getString(R.string.contacts_phone_label_mobile2));
+            buffer.put(Contacts.PhonesColumns.NUMBER, getPhoneMobile2());
+            context.getContentResolver().insert(phoneUri, buffer);
+        }
         if (!TextUtils.isEmpty(getPhoneHome())) {
             buffer.clear();
             buffer.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_HOME);
             buffer.put(Contacts.PhonesColumns.NUMBER, getPhoneHome());
             context.getContentResolver().insert(phoneUri, buffer);
         }
+        if (!TextUtils.isEmpty(getPhoneOther())) {
+            buffer.clear();
+            buffer.put(Contacts.PhonesColumns.TYPE, Contacts.PhonesColumns.TYPE_OTHER);
+            buffer.put(Contacts.PhonesColumns.NUMBER, getPhoneOther());
+            context.getContentResolver().insert(phoneUri, buffer);
+        }
 
-        // add the email
+        // add the addresses (e-mails and postal)
+        Uri addressUri = Uri.withAppendedPath(contactUri,
+                Contacts.People.ContactMethods.CONTENT_DIRECTORY);
+
+        // e-mails
         if (!TextUtils.isEmpty(getEmail())) {
-            Uri emailUri = Uri.withAppendedPath(contactUri,
-                    Contacts.People.ContactMethods.CONTENT_DIRECTORY);
             buffer.clear();
             buffer.put(Contacts.ContactMethodsColumns.KIND, Contacts.KIND_EMAIL);
             buffer.put(Contacts.ContactMethodsColumns.DATA, getEmail());
             buffer.put(Contacts.ContactMethodsColumns.TYPE,
                     Contacts.ContactMethodsColumns.TYPE_HOME);
-            context.getContentResolver().insert(emailUri, buffer);
+            context.getContentResolver().insert(addressUri, buffer);
         }
+        if (!TextUtils.isEmpty(getEmail2())) {
+            buffer.clear();
+            buffer.put(Contacts.ContactMethodsColumns.KIND, Contacts.KIND_EMAIL);
+            buffer.put(Contacts.ContactMethodsColumns.DATA, getEmail2());
+            buffer.put(Contacts.ContactMethodsColumns.TYPE,
+                    Contacts.ContactMethodsColumns.TYPE_OTHER);
+            context.getContentResolver().insert(addressUri, buffer);
+        }
+
+        // address
+        buffer.clear();
+        buffer.put(Contacts.ContactMethodsColumns.KIND, Contacts.KIND_POSTAL);
+        buffer.put(Contacts.ContactMethodsColumns.DATA, getFullAddress());
+        buffer.put(Contacts.ContactMethodsColumns.TYPE, Contacts.ContactMethodsColumns.TYPE_HOME);
+        context.getContentResolver().insert(addressUri, buffer);
     }
 
     /*
