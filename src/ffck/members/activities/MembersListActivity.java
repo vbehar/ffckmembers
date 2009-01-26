@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -225,7 +226,13 @@ public class MembersListActivity extends ListActivity implements OnSharedPrefere
             case DIALOG_ABOUT:
                 AlertDialog.Builder about = new AlertDialog.Builder(this);
                 about.setTitle(R.string.dialog_about_title);
-                about.setMessage(R.string.dialog_about_text);
+                TextView aboutTextView = new TextView(this);
+                aboutTextView.setText(R.string.dialog_about_text);
+                aboutTextView.setAutoLinkMask(Linkify.WEB_URLS);
+                aboutTextView.setLinksClickable(true);
+                aboutTextView.setPadding(10, 10, 10, 10);
+                Linkify.addLinks(aboutTextView, Linkify.WEB_URLS);
+                about.setView(aboutTextView);
                 about.setPositiveButton(R.string.dialog_about_button, null);
                 return about.create();
             case DIALOG_STATS:

@@ -117,7 +117,17 @@
     <string
         name="dialog_about_title">About</string>
     <string
-        name="dialog_about_text">About Text...</string>
+        name="dialog_about_text">FFCK Members - version 1.0.0\n\n
+        Store and display FFCK
+        members (imported from a CSV file).\n\n
+        Open source application
+        released under the Apache 2.0
+        License.\n
+        Code source is available
+        at
+        http://github.com/vbehar/ffckmembers.\n
+        Original author :
+        Vincent Behar</string>
     <string
         name="dialog_about_button">Close</string>
 
