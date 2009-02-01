@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:drawable/divider_horizontal_dark" />
 
-            <!-- Birth date and age -->
+            <!-- Birth date, age and category -->
             <TextView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
@@ -181,6 +181,30 @@
                     android:textAppearance="?android:attr/textAppearanceSmall" />
                 <TextView
                     android:id="@+id/member_details_age"
+                    android:layout_width="0px"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:paddingRight="6dip" />
+            </LinearLayout>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="30dip"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="8dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="@string/member_details_label_category"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                <TextView
+                    android:id="@+id/member_details_category"
                     android:layout_width="0px"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"

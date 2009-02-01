@@ -169,7 +169,7 @@ public class Member {
     }
 
     /**
-     * Calculate the age (in years) of the members (based on its birth date)
+     * Calculate the age (in years) of the member (based on its birth date)
      * 
      * @return age (in years)
      */
@@ -178,6 +178,27 @@ public class Member {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(ageInMilliSeconds);
         return cal.get(Calendar.YEAR) - 1970;
+    }
+
+    /**
+     * Calculate the category of the member (based on its birth date)
+     * 
+     * @return category
+     */
+    public Category calculateCategory() {
+        // current season year
+        Calendar now = Calendar.getInstance();
+        int currentSeasonYear = now.get(Calendar.YEAR);
+        if (now.get(Calendar.MONTH) >= 8) {
+            currentSeasonYear += 1;
+        }
+
+        // member birth year
+        Calendar birthDate = Calendar.getInstance();
+        birthDate.setTime(getBirthDate());
+        int memberBirthYear = birthDate.get(Calendar.YEAR);
+
+        return Category.getForAge(currentSeasonYear - memberBirthYear);
     }
 
     /**
@@ -458,6 +479,93 @@ public class Member {
      */
     public String getLastLicense() {
         return getAsString(LAST_LICENSE);
+    }
+
+    /*
+     * Inner classes
+     */
+
+    /**
+     * Enumeration that represents the category of age to which a member belongs
+     * at a specific season (depending on its age as of SEASON_YEAR/12/31)
+     */
+    public static enum Category {
+
+        TOO_YOUNG(R.string.category_too_young), POUSSIN_1(R.string.category_poussin_1), POUSSIN_2(
+                R.string.category_poussin_2), BENJAMIN_1(R.string.category_benjamin_1), BENJAMIN_2(
+                R.string.category_benjamin_2), MINIME_1(R.string.category_minime_1), MINIME_2(
+                R.string.category_minime_2), CADET_1(R.string.category_cadet_1), CADET_2(
+                R.string.category_cadet_2), JUNIOR_1(R.string.category_junior_1), JUNIOR_2(
+                R.string.category_junior_2), SENIOR(R.string.category_senior), VETERAN_1(
+                R.string.category_veteran_1), VETERAN_2(R.string.category_veteran_2), VETERAN_3(
+                R.string.category_veteran_3), TOO_OLD(R.string.category_too_old), UNKNOWN(
+                R.string.category_unknown);
+
+        /** Resource identifier for the string representation of the category */
+        private int valueResId;
+
+        private Category(int valueResId) {
+            this.valueResId = valueResId;
+        }
+
+        /**
+         * Return the right category instance for the given member age
+         * 
+         * @param age of the member, as of SEASON_YEAR/12/31
+         * @return category instance (won't be null)
+         */
+        public static Category getForAge(int age) {
+            switch (age) {
+                case 9:
+                    return POUSSIN_1;
+                case 10:
+                    return POUSSIN_2;
+                case 11:
+                    return BENJAMIN_1;
+                case 12:
+                    return BENJAMIN_2;
+                case 13:
+                    return MINIME_1;
+                case 14:
+                    return MINIME_2;
+                case 15:
+                    return CADET_1;
+                case 16:
+                    return CADET_2;
+                case 17:
+                    return JUNIOR_1;
+                case 18:
+                    return JUNIOR_2;
+                default:
+                    if (age < 9) {
+                        return TOO_YOUNG;
+                    }
+                    if (age >= 19 && age < 35) {
+                        return SENIOR;
+                    }
+                    if (age >= 35 && age < 40) {
+                        return VETERAN_1;
+                    }
+                    if (age >= 40 && age < 45) {
+                        return VETERAN_2;
+                    }
+                    if (age >= 45 && age < 50) {
+                        return VETERAN_3;
+                    }
+                    if (age >= 50) {
+                        return TOO_OLD;
+                    }
+                    return UNKNOWN;
+            }
+        }
+
+        /**
+         * @return the resource identifier for the string representation of the
+         *         category
+         */
+        public int getValueResId() {
+            return valueResId;
+        }
     }
 
 }

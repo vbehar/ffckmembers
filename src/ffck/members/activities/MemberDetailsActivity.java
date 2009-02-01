@@ -222,11 +222,13 @@ public class MemberDetailsActivity extends Activity {
         ((TextView)findViewById(R.id.member_details_last_license)).setText(member.getLastLicense());
         ((TextView)findViewById(R.id.member_details_code)).setText(member.getCode());
 
-        // birth date and age
+        // birth date, age and category
         ((TextView)findViewById(R.id.member_details_birth_date)).setText(member
                 .getBirthDateAsString());
         ((TextView)findViewById(R.id.member_details_age)).setText(String.valueOf(member
                 .calculateAge()));
+        ((TextView)findViewById(R.id.member_details_category)).setText(getString(member
+                .calculateCategory().getValueResId()));
 
         // phone numbers
         if (TextUtils.isEmpty(member.getPhoneMobile())) {

@@ -55,11 +55,13 @@
     <string
         name="member_details_label_code">License code</string>
     <string
-        name="member_details_section_birth_date">Birth date and age</string>
+        name="member_details_section_birth_date">Birth date, age and category</string>
     <string
         name="member_details_label_birth_date">Birth date</string>
     <string
         name="member_details_label_age">Age</string>
+    <string
+        name="member_details_label_category">Category</string>
     <string
         name="member_details_section_phones">Phone numbers</string>
     <string
@@ -117,7 +119,7 @@
     <string
         name="dialog_about_title">About</string>
     <string
-        name="dialog_about_text">FFCK Members - version 1.0.0\n\n
+        name="dialog_about_text">FFCK Members - version 1.1.0\n\n
         Store and display FFCK
         members (imported from a CSV file).\n\n
         Open source application
@@ -207,6 +209,42 @@
     <!-- Add member to contacts -->
     <string
         name="contacts_phone_label_mobile2">Mobile 2</string>
+
+    <!-- Member categories -->
+    <string
+        name="category_too_young">Poussin 0 ?</string>
+    <string
+        name="category_poussin_1">Poussin 1</string>
+    <string
+        name="category_poussin_2">Poussin 2</string>
+    <string
+        name="category_benjamin_1">Benjamin 1</string>
+    <string
+        name="category_benjamin_2">Benjamin 2</string>
+    <string
+        name="category_minime_1">Minime 1</string>
+    <string
+        name="category_minime_2">Minime 2</string>
+    <string
+        name="category_cadet_1">Cadet 1</string>
+    <string
+        name="category_cadet_2">Cadet 2</string>
+    <string
+        name="category_junior_1">Junior 1</string>
+    <string
+        name="category_junior_2">Junior 2</string>
+    <string
+        name="category_senior">Senior</string>
+    <string
+        name="category_veteran_1">Veteran 1</string>
+    <string
+        name="category_veteran_2">Veteran 2</string>
+    <string
+        name="category_veteran_3">Veteran 3</string>
+    <string
+        name="category_too_old">Veteran 42 ?</string>
+    <string
+        name="category_unknown">Inconnue</string>
 
     <!-- Arrays values -->
     <string
